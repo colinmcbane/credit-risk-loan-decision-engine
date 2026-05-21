@@ -410,4 +410,230 @@ def run_sql_cleaning():
     conn.commit()
     print("   summary_by_business_type table created")
 
-    
+    # --- 5F: WINDOW FUNCTION — LOAN RANK WITHIN INDUSTRY ---
+    print("   [5F] Creating loan rank within industry table...")
+    conn.execute("DROP TABLE IF EXISTS loans_ranked")
+    conn.execute("""
+        CREATE TABLE loans_ranked AS
+        SELECT
+            loan_id,
+            naics_sector,
+            loan_amount,
+            interest_rate,
+            default,
+            RANK() OVER (
+                PARTITION BY naics_sector
+                ORDER BY loan_amount DESC
+            ) AS rank_by_amount_in_sector,
+            AVG(default) OVER (
+                PARTITION BY naics_sector
+            ) AS sector_default_rate,
+            AVG(loan_amount) OVER (
+                PARTITION BY naics_sector
+            ) AS sector_avg_loan_amount
+        FROM loans_clean
+    """)
+    conn.commit()
+    print("   loans_ranked table created")
+
+     # --- 5G: CTE EXAMPLE — HIGH RISK LOANS ---
+    print("   [5G] Creating high risk loan summary...")
+    conn.execute("DROP TABLE IF EXISTS high_risk_loans")
+    conn.execute("""
+        CREATE TABLE high_risk_loans AS
+        WITH sector_stats AS (
+            SELECT
+                naics_sector,
+                AVG(default)                        AS sector_default_rate,
+                AVG(loan_amount)                    AS sector_avg_amount,
+                AVG(loan_amount) * 3.0              AS sector_p95_amount,
+                AVG(interest_rate)                  AS sector_avg_rate,
+                AVG(term_months)                    AS sector_avg_term,
+                AVG(sba_guarantee_pct)              AS sector_avg_guarantee_pct
+            FROM loans_clean
+            GROUP BY naics_sector
+        ),
+        district_stats AS (
+            SELECT
+                sba_district,
+                AVG(default)                        AS district_default_rate
+            FROM loans_clean
+            GROUP BY sba_district
+        ),
+        loan_flags AS (
+            SELECT
+                l.loan_id,
+                l.naics_sector,
+                l.loan_amount,
+                l.interest_rate,
+                l.term_months,
+                l.business_age,
+                l.has_collateral,
+                l.sba_guarantee_pct,
+                l.jobs_supported,
+                l.sba_district,
+                l.default,
+                s.sector_default_rate,
+                s.sector_avg_amount,
+                d.district_default_rate,
+
+                -- FLAG 1: Above average loan size for sector (weight 1)
+                -- Mild signal — loan is bigger than peers but not extreme
+                CASE
+                    WHEN l.loan_amount > s.sector_avg_amount
+                    THEN 1 ELSE 0
+                END AS above_avg_loan_size,
+
+                -- FLAG 2: Extreme loan size — 3x sector average (weight 3)
+                -- Strong signal — outlier ask relative to industry peers
+                CASE
+                    WHEN l.loan_amount > s.sector_p95_amount
+                    THEN 3 ELSE 0
+                END AS extreme_loan_score,
+
+                -- FLAG 3: Above average interest rate for sector (weight 1)
+                -- Mild signal — priced higher than peers
+                CASE
+                    WHEN l.interest_rate > s.sector_avg_rate
+                    THEN 1 ELSE 0
+                END AS above_avg_rate,
+
+                -- FLAG 4: Extreme interest rate — above 15% (weight 3)
+                -- Strong signal — very high cost of capital
+                CASE
+                    WHEN l.interest_rate > 15.0
+                    THEN 3 ELSE 0
+                END AS extreme_rate_score,
+
+                -- FLAG 5: New business (weight 2)
+                -- Strong signal — new businesses default at nearly 2x rate
+                CASE
+                    WHEN l.business_age = 'NEW BUSINESS OR 2 YEARS OR LESS'
+                    THEN 2 ELSE 0
+                END AS new_business_score,
+
+                -- FLAG 6: No collateral (weight 2)
+                -- Strong signal — nothing backing the loan
+                CASE
+                    WHEN l.has_collateral = 'N'
+                    THEN 2 ELSE 0
+                END AS no_collateral_score,
+
+                -- FLAG 7: Extreme term length — over 240 months (weight 2)
+                -- Signal — 20+ year commitment is aggressive for most business types
+                CASE
+                    WHEN l.term_months > 240
+                    THEN 2 ELSE 0
+                END AS extreme_term_score,
+
+                -- FLAG 8: Very short term at high rate (weight 2)
+                -- Signal — predatory structure, high repayment pressure
+                CASE
+                    WHEN l.term_months < 24
+                    AND l.interest_rate > s.sector_avg_rate
+                    THEN 2 ELSE 0
+                END AS short_term_high_rate_score,
+
+                -- FLAG 9: SBA guarantee too high — over 90% (weight 1)
+                -- Mild signal — bank has almost no skin in the game
+                CASE
+                    WHEN l.sba_guarantee_pct > 0.90
+                    THEN 1 ELSE 0
+                END AS high_guarantee_score,
+
+                -- FLAG 10: SBA guarantee unusually low — under 40% (weight 1)
+                -- Mild signal — unusual structure worth investigating
+                CASE
+                    WHEN l.sba_guarantee_pct < 0.40
+                    THEN 1 ELSE 0
+                END AS low_guarantee_score,
+
+                -- FLAG 11: Extreme jobs supported — over 200 (weight 2)
+                -- Signal — self-reported, unaudited, likely misrepresentation
+                CASE
+                    WHEN l.jobs_supported > 200
+                    THEN 2 ELSE 0
+                END AS extreme_jobs_score,
+
+                -- FLAG 12: High default rate district (weight 2)
+                -- Signal — geographic concentration of bad loans
+                CASE
+                    WHEN d.district_default_rate > 0.25
+                    THEN 2 ELSE 0
+                END AS high_risk_district_score,
+
+                -- FLAG 13: High default rate sector (weight 2)
+                -- Signal — operating in an industry with structural default risk
+                CASE
+                    WHEN s.sector_default_rate > 0.25
+                    THEN 2 ELSE 0
+                END AS high_risk_sector_score
+
+            FROM loans_clean l
+            JOIN sector_stats s  ON l.naics_sector = s.naics_sector
+            JOIN district_stats d ON l.sba_district = d.sba_district
+        )
+        SELECT *,
+            -- Total weighted risk score
+            (above_avg_loan_size +
+             extreme_loan_score +
+             above_avg_rate +
+             extreme_rate_score +
+             new_business_score +
+             no_collateral_score +
+             extreme_term_score +
+             short_term_high_rate_score +
+             high_guarantee_score +
+             low_guarantee_score +
+             extreme_jobs_score +
+             high_risk_district_score +
+             high_risk_sector_score)         AS weighted_risk_score,
+
+            -- Risk tier based on total score
+            CASE
+                WHEN (above_avg_loan_size +
+                      extreme_loan_score +
+                      above_avg_rate +
+                      extreme_rate_score +
+                      new_business_score +
+                      no_collateral_score +
+                      extreme_term_score +
+                      short_term_high_rate_score +
+                      high_guarantee_score +
+                      low_guarantee_score +
+                      extreme_jobs_score +
+                      high_risk_district_score +
+                      high_risk_sector_score) >= 8 THEN 'HIGH'
+                WHEN (above_avg_loan_size +
+                      extreme_loan_score +
+                      above_avg_rate +
+                      extreme_rate_score +
+                      new_business_score +
+                      no_collateral_score +
+                      extreme_term_score +
+                      short_term_high_rate_score +
+                      high_guarantee_score +
+                      low_guarantee_score +
+                      extreme_jobs_score +
+                      high_risk_district_score +
+                      high_risk_sector_score) >= 4 THEN 'MEDIUM'
+                ELSE 'LOW'
+            END                             AS risk_tier
+
+        FROM loan_flags
+        WHERE (above_avg_loan_size +
+               extreme_loan_score +
+               above_avg_rate +
+               extreme_rate_score +
+               new_business_score +
+               no_collateral_score +
+               extreme_term_score +
+               short_term_high_rate_score +
+               high_guarantee_score +
+               low_guarantee_score +
+               extreme_jobs_score +
+               high_risk_district_score +
+               high_risk_sector_score) >= 2
+    """)
+    conn.commit()
+    print("   high_risk_loans table created")
