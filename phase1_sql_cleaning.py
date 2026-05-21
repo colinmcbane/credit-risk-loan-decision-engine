@@ -17,9 +17,6 @@ from tqdm import tqdm
 # Base directory — wherever this script lives
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Base directory — wherever this script lives
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 # Raw data files
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
 FILE_2010_2019 = os.path.join(RAW_DIR, "sba_7a_2010_2019.csv")
@@ -45,50 +42,30 @@ def load_raw_data():
 
     # Define columns we actually want — drop address/PII/leakage columns now
     KEEP_COLS = [
-        "Program",
-        "BorrCity",
-        "BorrState",
-        "BorrZip",
-        "BankName",
-        "BankState",
-        "GrossApproval",
-        "SBAGuaranteedApproval",
-        "ApprovalDate",
-        "ApprovalFY",
-        "FirstDisbursementDate",
-        "InitialInterestRate",
-        "TermInMonths",
-        "NaicsCode",
-        "NaicsDescription",
-        "ProjectState",
-        "BusinessType",
-        "BusinessAge",
-        "LoanStatus",
-        "PaidInFullDate",
-        "ChargeOffDate",
-        "GrossChargeOffAmount",
-        "RevolverStatus",
-        "JobsSupported",
-        "CollateralInd",
-        "ProcessingMethod",
-        "SBADistrictOffice",
+        "program", "borrcity", "borrstate", "borrzip",
+        "bankname", "bankstate", "grossapproval",
+        "sbaguaranteedapproval", "approvaldate", "approvalfy",
+        "firstdisbursementdate", "initialinterestrate", "terminmonths",
+        "naicscode", "naicsdescription", "projectstate",
+        "businesstype", "businessage", "loanstatus",
+        "paidinfulldate", "chargeoffdate", "grosschargeoffamount",
+        "revolverstatus", "jobssupported", "collateralind",
+        "processingmethod", "sbadistrictoffice",
     ]
 
-    # Load first file with progress bar
+    # Load first file
     print("   Reading FY2010-2019...")
     df1 = pd.read_csv(
         FILE_2010_2019,
-        usecols=KEEP_COLS,
         low_memory=False,
         encoding="latin-1"
     )
     print(f"   FY2010-2019: {len(df1):,} rows loaded")
 
-    # Load second file with progress bar
+    # Load second file
     print("   Reading FY2020-Present...")
     df2 = pd.read_csv(
         FILE_2020_PRESENT,
-        usecols=KEEP_COLS,
         low_memory=False,
         encoding="latin-1"
     )
@@ -96,9 +73,13 @@ def load_raw_data():
 
     # Stack them into one dataframe
     df = pd.concat([df1, df2], ignore_index=True)
+
+    # Normalize column names to lowercase for cleaner downstream processing.
+    df.columns = df.columns.str.strip().str.lower()
+
     print(f"\n   Combined total: {len(df):,} rows")
     print(f"   Columns: {df.shape[1]}")
-
+   
     return df
 
 # =============================================================================
@@ -107,6 +88,11 @@ def load_raw_data():
 
 def profile_data(df):
     print("\n[2/6] Profiling raw data...")
+
+    # Normalize all column names — strip spaces, fix casing
+    df.columns = df.columns.str.strip().str.lower()
+    print("Cleaned column names:")
+    print(list(df.columns))
 
     # Shape
     print(f"\n   Rows: {len(df):,}")
@@ -124,7 +110,7 @@ def profile_data(df):
 
     # LoanStatus distribution — this is your target variable
     print("\n   --- LoanStatus Distribution ---")
-    print(df["LoanStatus"].value_counts())
+    print(df["loanstatus"].value_counts())
 
     # Data types
     print("\n   --- Data Types ---")
@@ -140,38 +126,41 @@ def clean_data(df):
     print("\n[3/6] Cleaning data...")
     starting_rows = len(df)
 
+    # Lowercase all column names so downstream SQL and pandas logic stay consistent.
+    df.columns = df.columns.str.strip().str.lower()
+
     # --- 3A: FILTER LOAN STATUS ---
     # Keep only loans with a final outcome — drop anything undisbursed/cancelled
     print("   [3A] Filtering LoanStatus...")
-    df = df[df["LoanStatus"].isin(["PIF", "CHGOFF"])]
+    df = df[df["loanstatus"].isin(["PIF", "CHGOFF"])]
     print(f"   Rows after status filter: {len(df):,}")
 
     # --- 3B: CREATE TARGET VARIABLE ---
     # 1 = defaulted (Charged Off), 0 = paid in full
     print("   [3B] Creating target variable...")
-    df["default"] = (df["LoanStatus"] == "CHGOFF").astype(int)
-    print(f"   Default rate: {df['default'].mean():.2%}")
+    df["is_default"] = (df["loanstatus"] == "CHGOFF").astype(int)
+    print(f"   Default rate: {df['is_default'].mean():.2%}")
 
     # --- 3C: FIX DATE COLUMNS ---
     print("   [3C] Parsing date columns...")
-    date_cols = ["ApprovalDate", "FirstDisbursementDate",
-                 "PaidInFullDate", "ChargeOffDate"]
+    date_cols = ["approvaldate", "firstdisbursementdate",
+                 "paidinfulldate", "chargeoffdate"]
     for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce")
 
     # --- 3D: FIX NUMERIC COLUMNS ---
     print("   [3D] Fixing numeric columns...")
-    numeric_cols = ["GrossApproval", "SBAGuaranteedApproval",
-                    "InitialInterestRate", "TermInMonths",
-                    "GrossChargeOffAmount", "JobsSupported"]
+    numeric_cols = ["grossapproval", "sbaguaranteedapproval",
+                    "initialinterestrate", "terminmonths",
+                    "grosschargeoffamount", "jobssupported"]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     
     # --- 3E: FIX CATEGORICAL COLUMNS ---
     print("   [3E] Standardizing categorical columns...")
-    cat_cols = ["BorrState", "BankState", "ProjectState",
-                "BusinessType", "BusinessAge", "RevolverStatus",
-                "CollateralInd", "ProcessingMethod"]
+    cat_cols = ["borrstate", "bankstate", "projectstate",
+                "businesstype", "businessage", "revolverstatus",
+                "collateralind", "processingmethod"]
     for col in cat_cols:
         df[col] = df[col].astype(str).str.strip().str.upper()
         df[col] = df[col].replace("NAN", None)
@@ -179,52 +168,52 @@ def clean_data(df):
     # --- 3F: DROP NULL CRITICAL COLUMNS ---
     # These columns must exist for a loan record to be useful
     print("   [3F] Dropping rows with nulls in critical columns...")
-    critical_cols = ["GrossApproval", "LoanStatus", "ApprovalDate",
-                     "BorrState", "NaicsCode", "TermInMonths",
-                     "InitialInterestRate"]
+    critical_cols = ["grossapproval", "loanstatus", "approvaldate",
+                     "borrstate", "naicscode", "terminmonths",
+                     "initialinterestrate"]
     df = df.dropna(subset=critical_cols)
     print(f"   Rows after null drop: {len(df):,}")
 
     # --- 3G: REMOVE OBVIOUS BAD DATA ---
     print("   [3G] Removing bad data...")
     # Loan amount must be positive
-    df = df[df["GrossApproval"] > 0]
+    df = df[df["grossapproval"] > 0]
     # Interest rate must be realistic
-    df = df[(df["InitialInterestRate"] > 0) &
-            (df["InitialInterestRate"] < 30)]
+    df = df[(df["initialinterestrate"] > 0) &
+            (df["initialinterestrate"] < 30)]
     # Term must be positive
-    df = df[df["TermInMonths"] > 0]
+    df = df[df["terminmonths"] > 0]
     # Approval year must be in range
-    df = df[(df["ApprovalFY"] >= 2010) &
-            (df["ApprovalFY"] <= 2026)]
+    df = df[(df["approvalfy"] >= 2010) &
+            (df["approvalfy"] <= 2026)]
     print(f"   Rows after bad data removal: {len(df):,}")
 
     # --- 3H: ENGINEER BASIC FEATURES ---
     print("   [3H] Engineering basic features...")
     # SBA guarantee percentage
     df["sba_guarantee_pct"] = (
-        df["SBAGuaranteedApproval"] / df["GrossApproval"]
+        df["sbaguaranteedapproval"] / df["grossapproval"]
     ).round(4)
 
     # Loan size buckets
     df["loan_size_bucket"] = pd.cut(
-        df["GrossApproval"],
+        df["grossapproval"],
         bins=[0, 150000, 500000, 1000000, 2000000, float("inf")],
         labels=["micro", "small", "medium", "large", "jumbo"]
     )
 
     # Approval year and month for time series use in Phase 2
-    df["approval_year"] = df["ApprovalDate"].dt.year
-    df["approval_month"] = df["ApprovalDate"].dt.month
+    df["approval_year"] = df["approvaldate"].dt.year
+    df["approval_month"] = df["approvaldate"].dt.month
 
     # NAICS sector — first 2 digits of NAICS code = industry sector
-    df["naics_sector"] = df["NaicsCode"].astype(str).str[:2]
+    df["naics_sector"] = df["naicscode"].astype(str).str[:2]
 
     print(f"\n   Cleaning complete.")
     print(f"   Started with: {starting_rows:,} rows")
     print(f"   Ended with:   {len(df):,} rows")
     print(f"   Removed:      {starting_rows - len(df):,} rows")
-    print(f"   Final default rate: {df['default'].mean():.2%}")
+    print(f"   Final default rate: {df['is_default'].mean():.2%}")
 
     return df
 
@@ -249,7 +238,7 @@ def load_to_sqlite(df):
     )
     print(f"   loans table: {len(df):,} rows written")
 
-# Verify it wrote correctly
+    # Verify it wrote correctly
     row_count = pd.read_sql("SELECT COUNT(*) as count FROM loans", conn)
     print(f"   Verified row count: {row_count['count'][0]:,}")
 
@@ -283,50 +272,50 @@ def run_sql_cleaning():
         SELECT
             -- Identifiers
             rowid                           AS loan_id,
-            Program,
-            ProcessingMethod,
+            program,
+            processingmethod,
 
             -- Borrower geography
-            BorrCity                        AS borr_city,
-            BorrState                       AS borr_state,
-            BorrZip                         AS borr_zip,
+            borrcity                        AS borr_city,
+            borrstate                       AS borr_state,
+            borrzip                         AS borr_zip,
 
             -- Lender info
-            BankName                        AS bank_name,
-            BankState                       AS bank_state,
+            bankname                        AS bank_name,
+            bankstate                       AS bank_state,
 
             -- Loan financials
-            GrossApproval                   AS loan_amount,
-            SBAGuaranteedApproval           AS sba_guaranteed_amount,
+            grossapproval                   AS loan_amount,
+            sbaguaranteedapproval           AS sba_guaranteed_amount,
             sba_guarantee_pct,
-            InitialInterestRate             AS interest_rate,
-            TermInMonths                    AS term_months,
-            RevolverStatus                  AS is_revolver,
+            initialinterestrate             AS interest_rate,
+            terminmonths                    AS term_months,
+            revolverstatus                  AS is_revolver,
 
             -- Business info
-            NaicsCode                       AS naics_code,
-            NaicsDescription                AS naics_description,
+            naicscode                       AS naics_code,
+            naicsdescription                AS naics_description,
             naics_sector,
-            BusinessType                    AS business_type,
-            BusinessAge                     AS business_age,
-            CollateralInd                   AS has_collateral,
-            JobsSupported                   AS jobs_supported,
+            businesstype                    AS business_type,
+            businessage                     AS business_age,
+            collateralind                   AS has_collateral,
+            jobssupported                   AS jobs_supported,
 
             -- Approval timing
-            ApprovalDate                    AS approval_date,
-            ApprovalFY                      AS approval_fy,
+            approvaldate                    AS approval_date,
+            approvalfy                      AS approval_fy,
             approval_year,
             approval_month,
-            FirstDisbursementDate           AS disbursement_date,
+            firstdisbursementdate           AS disbursement_date,
 
             -- Outcome
-            LoanStatus                      AS loan_status,
-            default,
-            GrossChargeOffAmount            AS chargeoff_amount,
+            loanstatus                      AS loan_status,
+            is_default                      AS is_default,
+            grosschargeoffamount            AS chargeoff_amount,
             loan_size_bucket,
 
             -- District
-            SBADistrictOffice               AS sba_district
+            sbadistrictoffice               AS sba_district
 
         FROM loans
     """)
@@ -340,15 +329,15 @@ def run_sql_cleaning():
         CREATE TABLE summary_by_industry AS
         SELECT
             naics_sector,
-            NaicsDescription                AS industry_description,
+            naics_description               AS industry_description,
             COUNT(*)                        AS total_loans,
-            SUM(default)                    AS total_defaults,
-            ROUND(AVG(default) * 100, 2)    AS default_rate_pct,
+            SUM(is_default)                 AS total_defaults,
+            ROUND(AVG(is_default) * 100, 2) AS default_rate_pct,
             ROUND(AVG(loan_amount), 0)      AS avg_loan_amount,
             ROUND(AVG(interest_rate), 2)    AS avg_interest_rate,
             ROUND(AVG(term_months), 0)      AS avg_term_months
         FROM loans_clean
-        GROUP BY naics_sector
+        GROUP BY naics_sector, naics_description
         ORDER BY default_rate_pct DESC
     """)
     conn.commit()
@@ -362,8 +351,8 @@ def run_sql_cleaning():
         SELECT
             borr_state,
             COUNT(*)                        AS total_loans,
-            SUM(default)                    AS total_defaults,
-            ROUND(AVG(default) * 100, 2)    AS default_rate_pct,
+            SUM(is_default)                 AS total_defaults,
+            ROUND(AVG(is_default) * 100, 2) AS default_rate_pct,
             ROUND(AVG(loan_amount), 0)      AS avg_loan_amount
         FROM loans_clean
         GROUP BY borr_state
@@ -380,8 +369,8 @@ def run_sql_cleaning():
         SELECT
             approval_year,
             COUNT(*)                        AS total_loans,
-            SUM(default)                    AS total_defaults,
-            ROUND(AVG(default) * 100, 2)    AS default_rate_pct,
+            SUM(is_default)                 AS total_defaults,
+            ROUND(AVG(is_default) * 100, 2) AS default_rate_pct,
             ROUND(AVG(loan_amount), 0)      AS avg_loan_amount,
             ROUND(AVG(interest_rate), 2)    AS avg_interest_rate
         FROM loans_clean
@@ -400,8 +389,8 @@ def run_sql_cleaning():
             business_type,
             business_age,
             COUNT(*)                        AS total_loans,
-            SUM(default)                    AS total_defaults,
-            ROUND(AVG(default) * 100, 2)    AS default_rate_pct,
+            SUM(is_default)                 AS total_defaults,
+            ROUND(AVG(is_default) * 100, 2) AS default_rate_pct,
             ROUND(AVG(loan_amount), 0)      AS avg_loan_amount
         FROM loans_clean
         GROUP BY business_type, business_age
@@ -420,12 +409,12 @@ def run_sql_cleaning():
             naics_sector,
             loan_amount,
             interest_rate,
-            default,
+            is_default,
             RANK() OVER (
                 PARTITION BY naics_sector
                 ORDER BY loan_amount DESC
             ) AS rank_by_amount_in_sector,
-            AVG(default) OVER (
+            AVG(is_default) OVER (
                 PARTITION BY naics_sector
             ) AS sector_default_rate,
             AVG(loan_amount) OVER (
@@ -444,7 +433,7 @@ def run_sql_cleaning():
         WITH sector_stats AS (
             SELECT
                 naics_sector,
-                AVG(default)                        AS sector_default_rate,
+                AVG(is_default)                     AS sector_default_rate,
                 AVG(loan_amount)                    AS sector_avg_amount,
                 AVG(loan_amount) * 3.0              AS sector_p95_amount,
                 AVG(interest_rate)                  AS sector_avg_rate,
@@ -456,7 +445,7 @@ def run_sql_cleaning():
         district_stats AS (
             SELECT
                 sba_district,
-                AVG(default)                        AS district_default_rate
+                AVG(is_default)                     AS district_default_rate
             FROM loans_clean
             GROUP BY sba_district
         ),
@@ -472,7 +461,7 @@ def run_sql_cleaning():
                 l.sba_guarantee_pct,
                 l.jobs_supported,
                 l.sba_district,
-                l.default,
+                l.is_default,
                 s.sector_default_rate,
                 s.sector_avg_amount,
                 d.district_default_rate,
@@ -637,3 +626,110 @@ def run_sql_cleaning():
     """)
     conn.commit()
     print("   high_risk_loans table created")
+
+# =============================================================================
+# STEP 6: FINAL VALIDATION
+# =============================================================================
+
+def validate_output():
+    print("\n[6/6] Validating final output...")
+
+    conn = sqlite3.connect(DB_PATH)
+
+    # Check all expected tables exist
+    tables = pd.read_sql(
+        "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name",
+        conn
+    )
+    print("\n   Tables and views in database:")
+    for t in tables["name"]:
+        count = pd.read_sql(f"SELECT COUNT(*) as n FROM {t}", conn)
+        print(f"   {t:<35} {count['n'][0]:>10,} rows")
+
+    # Sample the clean view
+    print("\n   --- Sample from loans_clean ---")
+    sample = pd.read_sql("""
+        SELECT
+            loan_id,
+            borr_state,
+            loan_amount,
+            interest_rate,
+            term_months,
+            naics_sector,
+            business_age,
+            is_default,
+            loan_size_bucket
+        FROM loans_clean
+        LIMIT 5
+    """, conn)
+    print(sample.to_string(index=False))
+
+    # Default rate summary
+    print("\n   --- Default Rate Summary ---")
+    default_summary = pd.read_sql("""
+        SELECT
+            loan_status,
+            COUNT(*)                        AS count,
+            ROUND(COUNT(*) * 100.0 /
+                SUM(COUNT(*)) OVER(), 2)    AS pct
+        FROM loans_clean
+        GROUP BY loan_status
+    """, conn)
+    print(default_summary.to_string(index=False))
+
+    # Top 5 industries by default rate
+    print("\n   --- Top 5 Industries by Default Rate ---")
+    top_industries = pd.read_sql("""
+        SELECT
+            naics_sector,
+            industry_description,
+            total_loans,
+            default_rate_pct
+        FROM summary_by_industry
+        WHERE total_loans > 100
+        ORDER BY default_rate_pct DESC
+        LIMIT 5
+    """, conn)
+    print(top_industries.to_string(index=False))
+
+    # Top 5 states by default rate
+    print("\n   --- Top 5 States by Default Rate ---")
+    top_states = pd.read_sql("""
+        SELECT
+            borr_state,
+            total_loans,
+            default_rate_pct
+        FROM summary_by_state
+        WHERE total_loans > 100
+        ORDER BY default_rate_pct DESC
+        LIMIT 5
+    """, conn)
+    print(top_states.to_string(index=False))
+
+    conn.close()
+    print("\n=== Phase 1 Complete ===")
+    print(f"Clean database saved to: {DB_PATH}")
+    print("Ready for Phase 2 — Exploratory Analysis in R")
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+if __name__ == "__main__":
+    # Step 1 — Load raw CSV files
+    df = load_raw_data()
+
+    # Step 2 — Profile raw data
+    null_report = profile_data(df)
+
+    # Step 3 — Clean the data
+    df_clean = clean_data(df)
+
+    # Step 4 — Load into SQLite
+    load_to_sqlite(df_clean)
+
+    # Step 5 — Run SQL cleaning queries
+    run_sql_cleaning()
+
+    # Step 6 — Validate output
+    validate_output()
