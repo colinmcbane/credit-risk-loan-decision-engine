@@ -1,0 +1,46 @@
+---
+title: "SBA 7(a) Loan Data — Exploratory Analysis"
+author: "Colin McBane"
+date: today
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# SBA 7(a) Loan Data — Exploratory Analysis
+
+## Overview
+
+This report analyzes raw SBA 7(a) federal loan data cleaned in Phase 1.
+The goal is to understand the distribution of loan characteristics,
+identify default patterns, and inform feature selection for Phase 4 modeling.
+
+```{r setup}
+#| label: setup
+#| message: false
+#| warning: false
+
+# Load libraries
+library(tidyverse)
+library(DBI)
+library(RSQLite)
+library(ggplot2)
+library(corrplot)
+library(scales)
+
+# Connect to SQLite database built in Phase 1
+conn <- dbConnect(
+  RSQLite::SQLite(),
+  "data/processed/sba_clean.db"
+)
+
+# Load the clean loans view into R
+loans <- dbGetQuery(conn, "SELECT * FROM loans_clean")
+
+# Quick sanity check
+cat("Rows loaded:", nrow(loans), "\n")
+cat("Columns:", ncol(loans), "\n")
+cat("Default rate:", round(mean(loans$is_default) * 100, 2), "%\n")
+```

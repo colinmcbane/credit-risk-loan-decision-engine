@@ -132,13 +132,13 @@ def clean_data(df):
     # --- 3A: FILTER LOAN STATUS ---
     # Keep only loans with a final outcome — drop anything undisbursed/cancelled
     print("   [3A] Filtering LoanStatus...")
-    df = df[df["loanstatus"].isin(["PIF", "CHGOFF"])]
+    df = df[df["loanstatus"].str.strip().isin(["PIF", "P I F", "CHGOFF"])].copy()
     print(f"   Rows after status filter: {len(df):,}")
 
     # --- 3B: CREATE TARGET VARIABLE ---
     # 1 = defaulted (Charged Off), 0 = paid in full
     print("   [3B] Creating target variable...")
-    df["is_default"] = (df["loanstatus"] == "CHGOFF").astype(int)
+    df["is_default"] = (df["loanstatus"].str.strip().isin(["CHGOFF"])).astype(int)
     print(f"   Default rate: {df['is_default'].mean():.2%}")
 
     # --- 3C: FIX DATE COLUMNS ---
