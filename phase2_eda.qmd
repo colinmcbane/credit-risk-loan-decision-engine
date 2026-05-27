@@ -44,3 +44,88 @@ cat("Rows loaded:", nrow(loans), "\n")
 cat("Columns:", ncol(loans), "\n")
 cat("Default rate:", round(mean(loans$is_default) * 100, 2), "%\n")
 ```
+
+## Loan Amount Distribution
+
+```{r loan-distribution, message = False, warning = FALSE}
+#| label: loan-distribution
+#| fig-width: 10
+#| fig-height: 6
+
+# Loan amount distribution by default status
+ggplot(loans, aes(x = loan_amount, fill = factor(is_default))) +
+  geom_histogram(bins = 50, alpha = 0.7, position = "identity") +
+  scale_x_continuous(
+    labels = dollar_format(scale = 1e-6, suffix = "M"),
+    limits = c(0, 2000000)
+  ) +
+  scale_fill_manual(
+    values = c("0" = "#2196F3", "1" = "#F44336"),
+    labels = c("0" = "Paid in Full", "1" = "Charged Off")
+  ) +
+  labs(
+    title = "SBA 7(a) Loan Amount Distribution by Default Status",
+    subtitle = "FY2010–Present | 489,935 loans",
+    x = "Loan Amount",
+    y = "Number of Loans",
+    fill = "Outcome"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top"
+  )
+```
+
+## Default Rate by Industry
+
+```{r default-by-industry}
+#| label: default-by-industry
+#| fig-width: 12
+#| fig-height: 7
+
+# Pull industry summary from SQLite
+industry <- dbGetQuery(conn, "
+  SELECT naics_sector, industry_description, 
+         total_loans, default_rate_pct
+  FROM summary_by_industry
+  WHERE total_loans > 500
+  ORDER BY default_rate_pct DESC
+  LIMIT 15
+")
+
+# Clean up industry descriptions for chart labels
+# Clean up industry descriptions for chart labels
+industry <- industry %>%
+  group_by(industry_description) %>%
+  slice_max(default_rate_pct, n = 1) %>%
+  ungroup() %>%
+  mutate(industry_description = str_wrap(industry_description, width = 40)) %>%
+  distinct(industry_description, .keep_all = TRUE) %>%
+  arrange(default_rate_pct) %>%
+  mutate(industry_description = factor(industry_description,
+                                        levels = unique(industry_description)))
+
+# Plot
+ggplot(industry, aes(x = industry_description, 
+                      y = default_rate_pct,
+                      fill = default_rate_pct)) +
+  geom_col() +
+  geom_text(aes(label = paste0(default_rate_pct, "%")),
+            hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_fill_gradient(low = "#FFF9C4", high = "#B71C1C") +
+  scale_y_continuous(limits = c(0, max(industry$default_rate_pct) * 1.15)) +
+  labs(
+    title = "Top 15 Industries by SBA Loan Default Rate",
+    subtitle = "Industries with 500+ loans | Ranked by default rate",
+    x = NULL,
+    y = "Default Rate (%)",
+    fill = "Default Rate"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
