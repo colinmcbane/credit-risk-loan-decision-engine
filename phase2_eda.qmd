@@ -13,9 +13,7 @@ execute:
 
 ## Overview
 
-This report analyzes raw SBA 7(a) federal loan data cleaned in Phase 1.
-The goal is to understand the distribution of loan characteristics,
-identify default patterns, and inform feature selection for Phase 4 modeling.
+This report analyzes raw SBA 7(a) federal loan data cleaned in Phase 1. The goal is to understand the distribution of loan characteristics, identify default patterns, and inform feature selection for Phase 4 modeling.
 
 ```{r setup}
 #| label: setup
@@ -77,6 +75,8 @@ ggplot(loans, aes(x = loan_amount, fill = factor(is_default))) +
   )
 ```
 
+**Key Finding:** SBA 7(a) loans are heavily concentrated below \$250,000 with a strong right skew. Charged-off loans appear proportionally more frequent in smaller loan buckets, which may suggest higher relative default risk at the lower end. However this is correlation not causation — larger loans undergo more rigorous underwriting scrutiny before approval, meaning the lower default rate on large loans likely reflects selection bias in the approval process rather than loan size itself being protective. This distinction will be important when interpreting model coefficients in Phase 4.
+
 ## Default Rate by Industry
 
 ```{r default-by-industry}
@@ -129,3 +129,157 @@ ggplot(industry, aes(x = industry_description,
     legend.position = "none"
   )
 ```
+
+**Key Finding:** Limousine and personal transportation services show the highest default rates at nearly 19%, followed by residential remodeling and electronic retail. These industries share common risk characteristics — project-based or discretionary revenue, high sensitivity to economic cycles, and thin operating margins. This finding will inform industry-level risk features in Phase 4 modeling.
+
+## Default Rate by State
+
+```{r default-by-state}
+#| label: default-by-state
+#| fig-width: 12
+#| fig-height: 7
+
+# Pull state summary from SQLite
+states <- dbGetQuery(conn, "
+  SELECT borr_state, total_loans, default_rate_pct
+  FROM summary_by_state
+  WHERE total_loans > 200
+  AND borr_state NOT IN ('', 'NULL')
+  ORDER BY default_rate_pct DESC
+  LIMIT 20
+")
+
+# Sort for chart
+states <- states %>%
+  arrange(default_rate_pct) %>%
+  mutate(borr_state = factor(borr_state, levels = borr_state))
+
+# Plot
+ggplot(states, aes(x = borr_state,
+                    y = default_rate_pct,
+                    fill = default_rate_pct)) +
+  geom_col() +
+  geom_text(aes(label = paste0(default_rate_pct, "%")),
+            hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_fill_gradient(low = "#E3F2FD", high = "#1565C0") +
+  scale_y_continuous(limits = c(0, max(states$default_rate_pct) * 1.15)) +
+  labs(
+    title = "Top 20 States by SBA Loan Default Rate",
+    subtitle = "States with 200+ loans | Ranked by default rate",
+    x = NULL,
+    y = "Default Rate (%)",
+    fill = "Default Rate"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
+
+**Key Finding:** Florida leads all states with an 11.74% default rate, 
+followed by DC and New Jersey at roughly 10.6% and 10.6% respectively. 
+Florida's elevated default rate is consistent with its exposure to 
+natural disaster risk — hurricanes and flooding can devastate small 
+businesses overnight, disrupting cash flow and making loan repayment 
+impossible regardless of the borrower's original creditworthiness. 
+This is a systemic geographic risk that individual underwriters cannot 
+control at the loan level.
+
+DC, New Jersey, and New York all appear in the top five, which aligns 
+with high cost-of-living environments where small business operating 
+costs — rent, labor, utilities — compress margins and reduce the buffer 
+against economic shocks. A restaurant in Manhattan faces fundamentally 
+different fixed cost pressure than the same restaurant in rural Tennessee.
+
+Texas and California, despite their large loan volumes, show moderate 
+default rates around 9-10%, suggesting that economic diversification 
+at the state level provides some natural hedge against industry-specific 
+downturns.
+
+This geographic signal will be incorporated as a state-level risk feature 
+in Phase 4 modeling. It also directly connects to Phase 5 fairness 
+analysis — states with structurally higher default rates may create 
+disparate impact concerns if geography is used as a direct model input.
+
+## Default Rate Over Time
+
+```{r default-by-year}
+#| label: default-by-year
+#| fig-width: 11
+#| fig-height: 6
+
+# Pull yearly summary from SQLite
+yearly <- dbGetQuery(conn, "
+  SELECT approval_year, total_loans, 
+         default_rate_pct, avg_loan_amount
+  FROM summary_by_year
+  WHERE approval_year IS NOT NULL
+  ORDER BY approval_year
+")
+
+# Dual axis plot — default rate and loan volume over time
+ggplot(yearly, aes(x = approval_year)) +
+  geom_col(aes(y = total_loans / 10),
+           fill = "#E3F2FD", color = "#90CAF9", alpha = 0.7) +
+  geom_line(aes(y = default_rate_pct * 100),
+            color = "#B71C1C", linewidth = 1.2) +
+  geom_point(aes(y = default_rate_pct * 100),
+             color = "#B71C1C", size = 3) +
+  scale_x_continuous(breaks = seq(min(yearly$approval_year),
+                                   max(yearly$approval_year), 1)) +
+  scale_y_continuous(
+    name = "Loan Volume (scaled)",
+    sec.axis = sec_axis(~ . / 100,
+                        name = "Default Rate (%)",
+                        labels = percent_format())
+  ) +
+  labs(
+    title = "SBA 7(a) Loan Volume and Default Rate by Approval Year",
+    subtitle = "Blue bars = loan volume | Red line = default rate",
+    x = "Approval Year"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+**Key Finding:** This chart reveals three distinct macroeconomic periods 
+that shaped SBA 7(a) lending patterns between 2010 and 2026.
+
+**2010–2019 — Post-Crisis Recovery:** Loan volume grew steadily through 
+the decade as the economy recovered from the 2008 financial crisis. 
+Default rates remained relatively stable in the 1,000–1,500 basis point 
+range, reflecting a healthy but cautious lending environment.
+
+**2020–2021 — COVID Displacement:** Loan volume dropped sharply in 2020 
+as the SBA redirected resources toward emergency programs — the Paycheck 
+Protection Program (PPP) and Economic Injury Disaster Loans (EIDL) — which 
+provided direct grants and forgivable loans to small businesses. These 
+programs temporarily absorbed demand that would otherwise have flowed 
+through the 7(a) program. Critically, default rates did not spike 
+immediately during the pandemic because government relief programs 
+artificially supported borrower cash flows, masking underlying credit stress.
+
+**2022–2023 — The Macroeconomic Double Whammy:** Default rates peaked in 
+this period as the Federal Reserve aggressively raised interest rates to 
+combat post-pandemic inflation — the fastest rate hiking cycle since the 
+1980s. Borrowers who took on variable-rate SBA loans during the low-rate 
+environment of 2020–2021 suddenly faced materially higher debt service 
+costs. Simultaneously, inflation compressed operating margins as input 
+costs rose faster than businesses could pass through price increases to 
+customers. The combination of higher rates and margin compression created 
+a perfect storm for small business defaults — explaining why the default 
+spike lagged the pandemic by two years rather than occurring during it.
+
+**2024–2026 — Right Censoring:** Default rates appear to fall sharply in 
+recent years, but this is a statistical artifact rather than a genuine 
+improvement in credit quality. Loans approved in 2023–2025 have not had 
+sufficient time to season and default. In credit risk modeling this is 
+called right censoring — recent observations are incomplete because the 
+outcome has not yet been observed. Phase 4 modeling will account for this 
+by weighting or excluding recent vintages from the training set to avoid 
+biasing the model toward artificially low default rates in recent years.
