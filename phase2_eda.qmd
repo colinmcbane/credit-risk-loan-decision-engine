@@ -4,12 +4,10 @@ author: "Colin McBane"
 date: today
 format: html
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
 ---
-
-# SBA 7(a) Loan Data — Exploratory Analysis
 
 ## Overview
 
@@ -45,8 +43,10 @@ cat("Default rate:", round(mean(loans$is_default) * 100, 2), "%\n")
 
 ## Loan Amount Distribution
 
-```{r loan-distribution, message = False, warning = FALSE}
+```{r loan-distribution}
 #| label: loan-distribution
+#| message: false
+#| warning: false
 #| fig-width: 10
 #| fig-height: 6
 
@@ -390,30 +390,13 @@ corrplot(
 )
 ```
 
-**Key Finding:** Interest rate shows the strongest linear correlation 
-with default at 0.13 — modest but meaningful given the binary nature 
-of the target variable. Term months shows a negative correlation of 
--0.18 with default, suggesting longer term loans default less frequently 
-— likely because longer terms reduce monthly payment pressure.
+**Key Finding:** Interest rate shows the strongest linear correlation with default at 0.13 — modest but meaningful given the binary nature of the target variable. Term months shows a negative correlation of -0.18 with default, suggesting longer term loans default less frequently — likely because longer terms reduce monthly payment pressure.
 
-The most critical finding is the perfect 1.00 correlation between 
-loan_amount and sba_guaranteed_amount. These two variables are 
-mathematically redundant — the guaranteed amount is calculated directly 
-from the loan amount using a fixed guarantee percentage. Keeping both 
-in a model would cause severe multicollinearity, inflating standard 
-errors in logistic regression and creating unstable coefficient estimates. 
-sba_guaranteed_amount will be dropped entirely before Phase 4 modeling. 
-sba_guarantee_pct is retained as it captures the guarantee structure 
-independently of loan size.
+The most critical finding is the perfect 1.00 correlation between loan_amount and sba_guaranteed_amount. These two variables are mathematically redundant — the guaranteed amount is calculated directly from the loan amount using a fixed guarantee percentage. Keeping both in a model would cause severe multicollinearity, inflating standard errors in logistic regression and creating unstable coefficient estimates. sba_guaranteed_amount will be dropped entirely before Phase 4 modeling. sba_guarantee_pct is retained as it captures the guarantee structure independently of loan size.
 
-Interest rate has a negative correlation of -0.26 with sba_guarantee_pct 
-— loans with higher SBA guarantee percentages tend to have lower interest 
-rates, which makes sense since the guarantee reduces lender risk and 
-allows more favorable pricing. This interaction will be explored further 
-in Phase 3 feature engineering.
+Interest rate has a negative correlation of -0.26 with sba_guarantee_pct — loans with higher SBA guarantee percentages tend to have lower interest rates, which makes sense since the guarantee reduces lender risk and allows more favorable pricing. This interaction will be explored further in Phase 3 feature engineering.
 
-All remaining numeric features show low enough inter-correlation to be 
-retained as independent predictors in Phase 4.
+All remaining numeric features show low enough inter-correlation to be retained as independent predictors in Phase 4.
 
 ## Summary of Findings
 
