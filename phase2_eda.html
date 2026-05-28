@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin McBane">
+<meta name="dcterms.date" content="2026-05-28">
+
+<title>SBA 7(a) Loan Data — Exploratory Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="phase2_eda_files/libs/clipboard/clipboard.min.js"></script>
+<script src="phase2_eda_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="phase2_eda_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="phase2_eda_files/libs/quarto-html/popper.min.js"></script>
+<script src="phase2_eda_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="phase2_eda_files/libs/quarto-html/anchor.min.js"></script>
+<link href="phase2_eda_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="phase2_eda_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="phase2_eda_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="phase2_eda_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="phase2_eda_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">SBA 7(a) Loan Data — Exploratory Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin McBane </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 28, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This report analyzes raw SBA 7(a) federal loan data cleaned in Phase 1. The goal is to understand the distribution of loan characteristics, identify default patterns, and inform feature selection for Phase 4 modeling.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows loaded: 489935 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Columns: 31 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Default rate: 7.42 %</code></pre>
+</div>
+</div>
+</section>
+<section id="loan-amount-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="loan-amount-distribution">Loan Amount Distribution</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/loan-distribution-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> SBA 7(a) loans are heavily concentrated below $250,000 with a strong right skew. Charged-off loans appear proportionally more frequent in smaller loan buckets, which may suggest higher relative default risk at the lower end. However this is correlation not causation — larger loans undergo more rigorous underwriting scrutiny before approval, meaning the lower default rate on large loans likely reflects selection bias in the approval process rather than loan size itself being protective. This distinction will be important when interpreting model coefficients in Phase 4.</p>
+</section>
+<section id="default-rate-by-industry" class="level2">
+<h2 class="anchored" data-anchor-id="default-rate-by-industry">Default Rate by Industry</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/default-by-industry-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Limousine and personal transportation services show the highest default rates at nearly 19%, followed by residential remodeling and electronic retail. These industries share common risk characteristics — project-based or discretionary revenue, high sensitivity to economic cycles, and thin operating margins. This finding will inform industry-level risk features in Phase 4 modeling.</p>
+</section>
+<section id="default-rate-by-state" class="level2">
+<h2 class="anchored" data-anchor-id="default-rate-by-state">Default Rate by State</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/default-by-state-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Florida leads all states with an 11.74% default rate, followed by DC and New Jersey at roughly 10.6% and 10.6% respectively. Florida’s elevated default rate is consistent with its exposure to natural disaster risk — hurricanes and flooding can devastate small businesses overnight, disrupting cash flow and making loan repayment impossible regardless of the borrower’s original creditworthiness. This is a systemic geographic risk that individual underwriters cannot control at the loan level.</p>
+<p>DC, New Jersey, and New York all appear in the top five, which aligns with high cost-of-living environments where small business operating costs — rent, labor, utilities — compress margins and reduce the buffer against economic shocks. A restaurant in Manhattan faces fundamentally different fixed cost pressure than the same restaurant in rural Tennessee.</p>
+<p>Texas and California, despite their large loan volumes, show moderate default rates around 9-10%, suggesting that economic diversification at the state level provides some natural hedge against industry-specific downturns.</p>
+<p>This geographic signal will be incorporated as a state-level risk feature in Phase 4 modeling. It also directly connects to Phase 5 fairness analysis — states with structurally higher default rates may create disparate impact concerns if geography is used as a direct model input.</p>
+</section>
+<section id="default-rate-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="default-rate-over-time">Default Rate Over Time</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/default-by-year-1.png" class="img-fluid figure-img" width="1056"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> This chart reveals three distinct macroeconomic periods that shaped SBA 7(a) lending patterns between 2010 and 2026.</p>
+<p><strong>2010–2019 — Post-Crisis Recovery:</strong> Loan volume grew steadily through the decade as the economy recovered from the 2008 financial crisis. Default rates remained relatively stable in the 1,000–1,500 basis point range, reflecting a healthy but cautious lending environment.</p>
+<p><strong>2020–2021 — COVID Displacement:</strong> Loan volume dropped sharply in 2020 as the SBA redirected resources toward emergency programs — the Paycheck Protection Program (PPP) and Economic Injury Disaster Loans (EIDL) — which provided direct grants and forgivable loans to small businesses. These programs temporarily absorbed demand that would otherwise have flowed through the 7(a) program. Critically, default rates did not spike immediately during the pandemic because government relief programs artificially supported borrower cash flows, masking underlying credit stress.</p>
+<p><strong>2022–2023 — The Macroeconomic Double Whammy:</strong> Default rates peaked in this period as the Federal Reserve aggressively raised interest rates to combat post-pandemic inflation — the fastest rate hiking cycle since the 1980s. Borrowers who took on variable-rate SBA loans during the low-rate environment of 2020–2021 suddenly faced materially higher debt service costs. Simultaneously, inflation compressed operating margins as input costs rose faster than businesses could pass through price increases to customers. The combination of higher rates and margin compression created a perfect storm for small business defaults — explaining why the default spike lagged the pandemic by two years rather than occurring during it.</p>
+<p><strong>2024–2026 — Right Censoring:</strong> Default rates appear to fall sharply in recent years, but this is a statistical artifact rather than a genuine improvement in credit quality. Loans approved in 2023–2025 have not had sufficient time to season and default. In credit risk modeling this is called right censoring — recent observations are incomplete because the outcome has not yet been observed. Phase 4 modeling will account for this by weighting or excluding recent vintages from the training set to avoid biasing the model toward artificially low default rates in recent years.</p>
+</section>
+<section id="interest-rate-vs-default-status" class="level2">
+<h2 class="anchored" data-anchor-id="interest-rate-vs-default-status">Interest Rate vs Default Status</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/interest-rate-default-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Charged-off loans carry measurably higher interest rates than loans paid in full. The median interest rate for defaulted loans sits roughly 1-2 percentage points above the paid-in-full median, and the interquartile range is wider — meaning defaulted loans show more variability in their pricing, not just higher rates on average.</p>
+<p>Two interpretations are worth noting here. First, higher interest rates directly increase monthly debt service costs, reducing the borrower’s cash flow buffer and increasing default probability — this is a direct causal mechanism. Second, lenders price risk into interest rates, meaning higher-rate loans were already flagged as riskier at origination. The interest rate therefore captures both the lender’s ex-ante risk assessment and the borrower’s ex-post repayment pressure simultaneously.</p>
+<p>The violin shape for charged-off loans shows a second concentration of loans around 10-12%, likely corresponding to variable-rate loans that reset higher during the 2022-2023 rate hiking cycle identified in the previous chart. This connects the time series finding to the individual loan level — rising rates did not just affect aggregate default rates, they show up in the interest rate distribution of individual defaulted loans.</p>
+<p>Interest rate will be included as a primary feature in Phase 4 modeling given this clear distributional separation between outcomes.</p>
+</section>
+<section id="business-age-vs-default-rate" class="level2">
+<h2 class="anchored" data-anchor-id="business-age-vs-default-rate">Business Age vs Default Rate</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/business-age-default-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Business age shows a clear monotonic relationship with default risk — newer businesses default at significantly higher rates than established ones. New businesses under two years old default at 12.66%, more than double the 5.63% rate for mature businesses with five or more years of operating history. This nearly 2.4x multiplier makes business age one of the strongest categorical predictors in the dataset and confirms its inclusion as a primary feature in Phase 4 modeling.</p>
+<p>Startups seeking pre-revenue financing show an 8.82% default rate — lower than businesses under one year old but higher than established firms. This is intuitive: startups that receive SBA financing have passed an initial underwriting screen, while businesses that have been operating for under a year have a demonstrated but short track record that provides limited predictive signal.</p>
+<p>One data quality concern worth noting is the overlap between category definitions. The SBA data contains multiple labels that describe similar business ages — “New Business or 2 Years or Less”, “New Less Than 1 Year Old”, and “Existing or More Than 2 Years Old” create ambiguous boundaries in the 1-2 year range. This inconsistency reflects real-world data collection issues in federal reporting systems where category definitions changed across fiscal years. In Phase 3 feature engineering these overlapping categories will be consolidated into a single ordinal business age variable to prevent the model from treating semantically similar categories as independent signals.</p>
+</section>
+<section id="correlation-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="correlation-matrix">Correlation Matrix</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phase2_eda_files/figure-html/correlation-matrix-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Interest rate shows the strongest linear correlation with default at 0.13 — modest but meaningful given the binary nature of the target variable. Term months shows a negative correlation of -0.18 with default, suggesting longer term loans default less frequently — likely because longer terms reduce monthly payment pressure.</p>
+<p>The most critical finding is the perfect 1.00 correlation between loan_amount and sba_guaranteed_amount. These two variables are mathematically redundant — the guaranteed amount is calculated directly from the loan amount using a fixed guarantee percentage. Keeping both in a model would cause severe multicollinearity, inflating standard errors in logistic regression and creating unstable coefficient estimates. sba_guaranteed_amount will be dropped entirely before Phase 4 modeling. sba_guarantee_pct is retained as it captures the guarantee structure independently of loan size.</p>
+<p>Interest rate has a negative correlation of -0.26 with sba_guarantee_pct — loans with higher SBA guarantee percentages tend to have lower interest rates, which makes sense since the guarantee reduces lender risk and allows more favorable pricing. This interaction will be explored further in Phase 3 feature engineering.</p>
+<p>All remaining numeric features show low enough inter-correlation to be retained as independent predictors in Phase 4.</p>
+</section>
+<section id="summary-of-findings" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-findings">Summary of Findings</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Summary of EDA Findings and Modeling Implications</caption>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 51%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">EDA Finding</th>
+<th style="text-align: left;">Phase 4 Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Business Age</td>
+<td style="text-align: left;">New businesses default at 12.66% vs 5.33% for mature — strongest categorical predictor</td>
+<td style="text-align: left;">Consolidate overlapping categories into ordinal feature</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Interest Rate</td>
+<td style="text-align: left;">Defaulted loans carry 1-2% higher rates — direct causal mechanism via debt service pressure</td>
+<td style="text-align: left;">Include as primary numeric feature</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Industry</td>
+<td style="text-align: left;">Limousine services (18.75%) and residential remodeling (15.93%) lead default rates</td>
+<td style="text-align: left;">Use 2-digit NAICS sector as categorical feature</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geography</td>
+<td style="text-align: left;">Florida leads at 11.74% — driven by hurricane exposure and high operating costs</td>
+<td style="text-align: left;">Include state as categorical — flag for fairness analysis in Phase 5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Loan Amount</td>
+<td style="text-align: left;">Smaller loans show higher relative default rates — but reflects underwriting selection bias</td>
+<td style="text-align: left;">Use loan_size_bucket categorical — avoid raw amount due to skew</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Term Length</td>
+<td style="text-align: left;">Negative correlation with default (-0.18) — longer terms reduce monthly payment pressure</td>
+<td style="text-align: left;">Include as numeric feature</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Loan Volume Trend</td>
+<td style="text-align: left;">2022-2023 default spike reflects Fed rate hikes — recent loans right-censored</td>
+<td style="text-align: left;">Exclude 2023-2025 loans from training set or apply vintage weights</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
