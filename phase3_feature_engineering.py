@@ -12,6 +12,7 @@ import sqlite3
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.decomposition import PCA
 
@@ -184,6 +185,10 @@ def split_data(df):
 # STEP 4: ENCODE CATEGORICALS AND SCALE NUMERICS
 # =============================================================================
 
+# =============================================================================
+# STEP 4: ENCODE CATEGORICALS AND SCALE NUMERICS
+# =============================================================================
+
 def encode_and_scale(X_train, X_test):
     print("\n[4/5] Encoding categoricals and scaling numerics...")
 
@@ -267,6 +272,29 @@ def encode_and_scale(X_train, X_test):
     print(f"   Numeric columns scaled: {len(numeric_cols_present)}")
     print(f"   Final training shape: {X_train_encoded.shape}")
     print(f"   Final test shape:     {X_test_encoded.shape}")
+
+    # --- SAVE SCALER PARAMETERS ---
+    # Required for Phase 4 stress testing
+    # Translates raw economic shocks into standardized units
+    # Example: a 2% rate hike becomes 2.0 / std(interest_rate) in scaled space
+    scaler_params = pd.DataFrame({
+        "feature": numeric_cols_present,
+        "mean":    scaler.mean_,
+        "std":     scaler.scale_
+    })
+    scaler_params.to_csv(
+        os.path.join(OUTPUT_DIR, "scaler_params.csv"),
+        index=False
+    )
+    print(f"   Scaler parameters saved: {len(numeric_cols_present)} features")
+
+    # --- SAVE SCALER OBJECT ---
+    # Full fitted scaler saved for Phase 6 production scoring
+    # Phase 6 must apply identical preprocessing to new loan applications
+    # before running them through the trained model
+    # SR 11-7 requires preprocessing steps to be documented and reproducible
+    joblib.dump(scaler, os.path.join(OUTPUT_DIR, "scaler.pkl"))
+    print("   Scaler object saved: data/processed/scaler.pkl")
 
     return X_train_encoded, X_test_encoded, scaler
 
