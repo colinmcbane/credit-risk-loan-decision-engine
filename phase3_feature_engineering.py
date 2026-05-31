@@ -357,13 +357,46 @@ def rank_feature_importance(X_train, y_train):
     # --- SAVE IMPORTANCE CHART ---
     top_features = importance_df.head(25)
 
+    # Clean up feature names for display
+    label_map = {
+        "term_months":              "Term Length (Months)",
+        "interest_rate":            "Interest Rate",
+        "loan_amount":              "Loan Amount",
+        "sba_guarantee_pct":        "SBA Guarantee %",
+        "business_age_mature":      "Business Age: Mature (5+ Yrs)",
+        "loan_size_bucket_micro":   "Loan Size: Micro (<$150K)",
+        "naics_sector_62":          "Industry: Health Care",
+        "loan_size_bucket_large":   "Loan Size: Large ($1M-$2M)",
+        "borr_state_FL":            "State: Florida",
+        "business_age_startup":     "Business Age: Startup",
+        "borr_state_TX":            "State: Texas",
+        "jobs_supported":           "Jobs Supported",
+        "business_age_established": "Business Age: Established",
+        "loan_size_bucket_small":   "Loan Size: Small ($150K-$500K)",
+        "borr_state_CA":            "State: California",
+        "loan_size_bucket_medium":  "Loan Size: Medium ($500K-$1M)",
+        "business_age_new":         "Business Age: New (<2 Yrs)",
+        "naics_sector_48":          "Industry: Transportation",
+        "borr_state_WI":            "State: Wisconsin",
+        "borr_state_NJ":            "State: New Jersey",
+        "borr_state_NY":            "State: New York",
+        "naics_sector_71":          "Industry: Arts & Entertainment",
+        "naics_sector_52":          "Industry: Finance & Insurance",
+        "borr_state_WA":            "State: Washington",
+        "naics_sector_45":          "Industry: Specialty Retail",
+    }
+
+    top_features["feature_label"] = top_features["feature"].map(
+        label_map
+    ).fillna(top_features["feature"])
+
     plt.figure(figsize=(12, 8))
     colors = plt.cm.RdYlGn(
         [x / top_features["importance"].max()
          for x in top_features["importance"]]
     )
     bars = plt.barh(
-        top_features["feature"][::-1],
+        top_features["feature_label"][::-1],
         top_features["importance"][::-1],
         color=colors[::-1]
     )
