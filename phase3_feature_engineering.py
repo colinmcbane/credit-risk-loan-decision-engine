@@ -270,3 +270,242 @@ def encode_and_scale(X_train, X_test):
 
     return X_train_encoded, X_test_encoded, scaler
 
+# =============================================================================
+# STEP 5: FEATURE IMPORTANCE RANKING
+# =============================================================================
+
+from sklearn.ensemble import RandomForestClassifier
+
+def rank_feature_importance(X_train, y_train):
+    print("\n[5/5] Ranking feature importance...")
+
+    # --- BASELINE RANDOM FOREST ---
+    # We use a shallow Random Forest purely as a feature importance tool
+    # Not the final model — just a fast way to rank signal strength
+    # max_depth=5 keeps it fast — we don't need a perfect model here
+    # n_estimators=100 gives stable importance estimates
+    print("   Training baseline Random Forest for feature importance...")
+
+    rf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        random_state=42,
+        n_jobs=-1,
+        class_weight="balanced"
+    )
+    rf.fit(X_train, y_train)
+
+    # --- EXTRACT IMPORTANCE SCORES ---
+    importance_df = pd.DataFrame({
+        "feature": X_train.columns,
+        "importance": rf.feature_importances_
+    }).sort_values("importance", ascending=False).reset_index(drop=True)
+
+    print(f"\n   Top 20 features by importance:")
+    print(importance_df.head(20).to_string(index=False))
+
+    # --- IDENTIFY LOW SIGNAL FEATURES ---
+    # Features with importance below threshold contribute noise not signal
+    # Threshold of 0.001 removes features that explain less than 0.1% of variance
+    IMPORTANCE_THRESHOLD = 0.001
+    low_signal = importance_df[
+        importance_df["importance"] < IMPORTANCE_THRESHOLD
+    ]["feature"].tolist()
+
+    print(f"\n   Low signal features (importance < {IMPORTANCE_THRESHOLD}):")
+    print(f"   {low_signal}")
+    print(f"   Dropping {len(low_signal)} low signal features")
+
+    # --- DROP LOW SIGNAL FEATURES ---
+    # This replaces PCA for dimensionality reduction
+    # Raw features are preserved for SHAP explainability in Phase 4
+    # PCA components cannot be explained to regulators or underwriters
+    keep_features = importance_df[
+        importance_df["importance"] >= IMPORTANCE_THRESHOLD
+    ]["feature"].tolist()
+
+    print(f"   Keeping {len(keep_features)} features")
+
+    # --- SAVE IMPORTANCE CHART ---
+    top_features = importance_df.head(25)
+
+    plt.figure(figsize=(12, 8))
+    colors = plt.cm.RdYlGn(
+        [x / top_features["importance"].max()
+         for x in top_features["importance"]]
+    )
+    bars = plt.barh(
+        top_features["feature"][::-1],
+        top_features["importance"][::-1],
+        color=colors[::-1]
+    )
+    plt.xlabel("Feature Importance Score")
+    plt.title("Top 25 Features by Random Forest Importance\nSBA 7(a) Credit Risk Model")
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(CHARTS_DIR, "feature_importance.png"),
+        dpi=150,
+        bbox_inches="tight"
+    )
+    plt.close()
+    print(f"\n   Chart saved to: outputs/eda_charts/feature_importance.png")
+
+    # --- PCA FOR VISUALIZATION ONLY ---
+    # PCA used here purely to understand variance structure
+    # NOT used to compress features for modeling
+    # Raw features retained for SHAP explainability
+    print("\n   Running PCA for variance visualization...")
+
+    pca = PCA(random_state=42)
+    pca.fit(X_train)
+
+    explained_variance = pd.DataFrame({
+        "component": range(1, len(pca.explained_variance_ratio_) + 1),
+        "explained_variance": pca.explained_variance_ratio_,
+        "cumulative_variance": pca.explained_variance_ratio_.cumsum()
+    })
+
+    # Find how many components explain 90% of variance
+    n_components_90 = (
+        explained_variance["cumulative_variance"] < 0.90
+    ).sum() + 1
+
+    print(f"   Components needed for 90% variance: {n_components_90}")
+    print(f"   Top 5 component variance explained:")
+    print(explained_variance.head(5).to_string(index=False))
+
+    # Save PCA scree plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(
+        explained_variance["component"][:30],
+        explained_variance["cumulative_variance"][:30],
+        marker="o", color="#1565C0", linewidth=2
+    )
+    plt.axhline(y=0.90, color="red", linestyle="--",
+                label="90% variance threshold")
+    plt.xlabel("Number of Principal Components")
+    plt.ylabel("Cumulative Explained Variance")
+    plt.title("PCA Scree Plot — Cumulative Variance Explained\n(Visualization Only — Raw Features Used for Modeling)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(CHARTS_DIR, "pca_scree_plot.png"),
+        dpi=150,
+        bbox_inches="tight"
+    )
+    plt.close()
+    print(f"   Chart saved to: outputs/eda_charts/pca_scree_plot.png")
+
+    return keep_features, importance_df
+
+# =============================================================================
+# STEP 6: SAVE FEATURE MATRIX
+# =============================================================================
+
+def save_feature_matrix(X_train, X_test, y_train, y_test,
+                         keep_features, df_recent):
+    print("\n[6/6] Saving feature matrix...")
+
+    # --- APPLY FEATURE SELECTION ---
+    # Keep only features that passed the importance threshold
+    # Ensures train and test have identical columns
+    keep_cols_train = [c for c in keep_features if c in X_train.columns]
+    keep_cols_test  = [c for c in keep_features if c in X_test.columns]
+    final_cols = [c for c in keep_cols_train if c in keep_cols_test]
+
+    X_train_final = X_train[final_cols].copy()
+    X_test_final  = X_test[final_cols].copy()
+
+    print(f"   Final feature count: {len(final_cols)}")
+
+    # --- ADD TARGET BACK ---
+    X_train_final["is_default"] = y_train.values
+    X_test_final["is_default"]  = y_test.values
+
+    # --- SAVE TO CSV ---
+    train_path = os.path.join(OUTPUT_DIR, "train_features.csv")
+    test_path  = os.path.join(OUTPUT_DIR, "test_features.csv")
+
+    X_train_final.to_csv(train_path, index=False)
+    X_test_final.to_csv(test_path,  index=False)
+
+    print(f"   Training set saved: {X_train_final.shape}")
+    print(f"   Test set saved:     {X_test_final.shape}")
+    print(f"   Train path: {train_path}")
+    print(f"   Test path:  {test_path}")
+
+    # --- SAVE RECENT LOANS SEPARATELY ---
+    # Right-censored loans saved for Phase 7 live prediction demo
+    # These are genuinely unseen loans — never touched during training
+    recent_path = os.path.join(OUTPUT_DIR, "recent_loans.csv")
+    df_recent.to_csv(recent_path, index=False)
+    print(f"   Recent loans saved: {df_recent.shape}")
+    print(f"   Recent path: {recent_path}")
+
+    # --- SAVE FEATURE LIST ---
+    # Saved so Phase 4 knows exactly which columns to expect
+    feature_list_path = os.path.join(OUTPUT_DIR, "feature_list.txt")
+    with open(feature_list_path, "w") as f:
+        for col in final_cols:
+            f.write(col + "\n")
+    print(f"   Feature list saved: {feature_list_path}")
+
+    return X_train_final, X_test_final
+
+# =============================================================================
+# STEP 7: VALIDATION SUMMARY
+# =============================================================================
+
+def validate_output(X_train_final, X_test_final, importance_df):
+    print("\n=== Phase 3 Validation Summary ===")
+
+    print(f"\n   Training set:   {X_train_final.shape[0]:,} rows | "
+          f"{X_train_final.shape[1] - 1} features")
+    print(f"   Test set:       {X_test_final.shape[0]:,} rows | "
+          f"{X_test_final.shape[1] - 1} features")
+    print(f"   Train default:  "
+          f"{X_train_final['is_default'].mean():.2%}")
+    print(f"   Test default:   "
+          f"{X_test_final['is_default'].mean():.2%}")
+
+    print("\n   --- Top 10 Features for Phase 4 ---")
+    print(importance_df.head(10).to_string(index=False))
+
+    print("\n   --- Files Saved ---")
+    print("   data/processed/train_features.csv")
+    print("   data/processed/test_features.csv")
+    print("   data/processed/recent_loans.csv")
+    print("   data/processed/feature_list.txt")
+    print("   outputs/eda_charts/feature_importance.png")
+    print("   outputs/eda_charts/pca_scree_plot.png")
+
+    print("\n=== Phase 3 Complete ===")
+    print("Ready for Phase 4 — Credit Risk Modeling")
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+if __name__ == "__main__":
+    # Step 1 — Load data
+    df = load_data()
+
+    # Step 2 — Clean features
+    df = clean_features(df)
+
+    # Step 3 — Train/test split
+    X_train, X_test, y_train, y_test, FEATURE_COLS, df_recent = split_data(df)
+
+    # Step 4 — Encode and scale
+    X_train, X_test, scaler = encode_and_scale(X_train, X_test)
+
+    # Step 5 — Feature importance and PCA visualization
+    keep_features, importance_df = rank_feature_importance(X_train, y_train)
+
+    # Step 6 — Save feature matrix
+    X_train_final, X_test_final = save_feature_matrix(
+        X_train, X_test, y_train, y_test, keep_features, df_recent
+    )
+
+    # Step 7 — Validate output
+    validate_output(X_train_final, X_test_final, importance_df)
