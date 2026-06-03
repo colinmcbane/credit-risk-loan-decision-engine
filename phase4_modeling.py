@@ -115,3 +115,88 @@ def load_data():
 # =============================================================================
 # STEP 2: EVALUATION UTILITIES
 # =============================================================================
+
+def calculate_ks_statistic(y_true, y_prob):
+    """
+    KS Statistic — maximum separation between cumulative
+    distribution of defaulters and non-defaulters.
+    Industry standard metric for credit scorecard evaluation.
+    KS > 40 is good, KS > 50 is strong.
+    """
+    df = pd.DataFrame({"y_true": y_true, "y_prob": y_prob})
+    df = df.sort_values("y_prob", ascending=False).reset_index(drop=True)
+
+    df["cumulative_default"] = (
+        df["y_true"].cumsum() / df["y_true"].sum()
+    )
+    df["cumulative_non_default"] = (
+        (1 - df["y_true"]).cumsum() / (1 - df["y_true"]).sum()
+    )
+    df["ks"] = abs(
+        df["cumulative_default"] - df["cumulative_non_default"]
+    )
+
+    return df["ks"].max() * 100
+
+
+def calculate_gini(auc):
+    """
+    Gini Coefficient = 2 * AUC - 1
+    Used in European banking and Basel III regulatory reporting.
+    Gini of 0.60 means model captures 60% of a perfect model's power.
+    """
+    return (2 * auc - 1) * 100
+
+
+def evaluate_model(model, X_test, y_test, model_name):
+    """
+    Full evaluation suite for a trained model.
+    Returns dictionary of all metrics.
+    """
+    # Get probability scores
+    y_prob = model.predict_proba(X_test)[:, 1]
+
+    # Apply decision threshold
+    y_pred = (y_prob >= DECISION_THRESHOLD).astype(int)
+
+    # Core metrics
+    auc  = roc_auc_score(y_test, y_prob)
+    ks   = calculate_ks_statistic(y_test.values, y_prob)
+    gini = calculate_gini(auc)
+    ap   = average_precision_score(y_test, y_prob)
+
+    # Confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    tn, fp, fn, tp = cm.ravel()
+
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    recall    = tp / (tp + fn) if (tp + fn) > 0 else 0
+    f1        = (2 * precision * recall / (precision + recall)
+                 if (precision + recall) > 0 else 0)
+
+    results = {
+        "model":      model_name,
+        "auc":        round(auc, 4),
+        "ks":         round(ks, 2),
+        "gini":       round(gini, 2),
+        "avg_precision": round(ap, 4),
+        "precision":  round(precision, 4),
+        "recall":     round(recall, 4),
+        "f1":         round(f1, 4),
+        "tp":         int(tp),
+        "fp":         int(fp),
+        "tn":         int(tn),
+        "fn":         int(fn),
+        "y_prob":     y_prob
+    }
+
+    print(f"\n   {model_name} Results:")
+    print(f"   AUC:       {auc:.4f}")
+    print(f"   KS:        {ks:.2f}")
+    print(f"   Gini:      {gini:.2f}%")
+    print(f"   Precision: {precision:.4f}")
+    print(f"   Recall:    {recall:.4f}")
+    print(f"   F1:        {f1:.4f}")
+    print(f"   TP: {tp:,}  FP: {fp:,}  TN: {tn:,}  FN: {fn:,}")
+
+    return results
