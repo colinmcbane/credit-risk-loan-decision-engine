@@ -519,3 +519,365 @@ def train_lightgbm(X_train, y_train, X_test, y_test):
     print(f"\n   Model saved: {model_path}")
 
     return lgb_final, lgb_results
+
+# =============================================================================
+# STEP 6: MODEL COMPARISON — CHAMPION-CHALLENGER FRAMEWORK
+# =============================================================================
+
+def compare_models(lr_results, xgb_results, lgb_results,
+                   X_test, y_test):
+    print("\n[6/8] Champion-Challenger model comparison...")
+
+    all_results = [lr_results, xgb_results, lgb_results]
+
+    # --- BUILD COMPARISON TABLE ---
+    comparison = pd.DataFrame([{
+        "Model":        r["model"],
+        "AUC":          r["auc"],
+        "KS Statistic": r["ks"],
+        "Gini":         r["gini"],
+        "Precision":    r["precision"],
+        "Recall":       r["recall"],
+        "F1":           r["f1"],
+        "CV AUC Mean":  r["cv_auc_mean"],
+        "CV AUC Std":   r["cv_auc_std"],
+        "True Pos":     r["tp"],
+        "False Pos":    r["fp"],
+        "True Neg":     r["tn"],
+        "False Neg":    r["fn"],
+    } for r in all_results])
+
+    print("\n   --- Champion-Challenger Comparison Table ---")
+    print(comparison.to_string(index=False))
+
+    # --- DECLARE CHAMPION ---
+    # Champion selected by highest AUC on held-out test set
+    # AUC is threshold-independent — most reliable single metric
+    # for credit risk model selection under SR 11-7
+    champion_idx  = comparison["AUC"].idxmax()
+    champion_name = comparison.loc[champion_idx, "Model"]
+    champion_auc  = comparison.loc[champion_idx, "AUC"]
+
+    print(f"\n   === CHAMPION MODEL: {champion_name} ===")
+    print(f"   AUC:  {champion_auc:.4f}")
+    print(f"   KS:   {comparison.loc[champion_idx, 'KS Statistic']:.2f}")
+    print(f"   Gini: {comparison.loc[champion_idx, 'Gini']:.2f}%")
+    print(f"\n   Champion drives Phase 6 decision engine.")
+    print(f"   Logistic Regression retained as interpretable baseline.")
+
+    # --- SAVE COMPARISON TABLE ---
+    comparison_path = os.path.join(OUTPUT_DIR, "model_comparison.csv")
+    comparison.to_csv(comparison_path, index=False)
+    print(f"\n   Comparison table saved: {comparison_path}")
+
+    # --- ROC CURVE CHART ---
+    print("\n   Generating ROC curve chart...")
+
+    plt.figure(figsize=(10, 8))
+
+    colors = {
+        "Logistic Regression": "#9E9E9E",
+        "XGBoost":             "#1565C0",
+        "LightGBM":            "#2E7D32"
+    }
+
+    for r in all_results:
+        fpr, tpr, _ = roc_curve(y_test, r["y_prob"])
+        plt.plot(
+            fpr, tpr,
+            label=f"{r['model']} (AUC={r['auc']:.4f}, "
+                  f"KS={r['ks']:.1f}, Gini={r['gini']:.1f}%)",
+            color=colors[r["model"]],
+            linewidth=2.5
+        )
+
+    # Random baseline
+    plt.plot([0, 1], [0, 1], "k--",
+             linewidth=1, label="Random (AUC=0.50)")
+
+    # NOTE: Decision threshold line removed per model validator review
+    # x-axis of ROC curve is False Positive Rate not probability threshold
+    # Drawing axvline at x=0.35 would imply acceptable FPR=35% which is incorrect
+
+    plt.xlabel("False Positive Rate", fontsize=12)
+    plt.ylabel("True Positive Rate", fontsize=12)
+    plt.title(
+        "ROC Curves — Champion-Challenger Comparison\n"
+        "SBA 7(a) Credit Risk Models",
+        fontsize=13, fontweight="bold"
+    )
+    plt.legend(loc="lower right", fontsize=10)
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+
+    roc_path = os.path.join(SHAP_DIR, "roc_curves.png")
+    plt.savefig(roc_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"   ROC curves saved: {roc_path}")
+
+    # --- CONFUSION MATRIX CHART ---
+    print("   Generating confusion matrix charts...")
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    for ax, r in zip(axes, all_results):
+        cm = np.array([
+            [r["tn"], r["fp"]],
+            [r["fn"], r["tp"]]
+        ])
+        sns.heatmap(
+            cm, annot=True, fmt=",",
+            cmap="Blues", ax=ax,
+            xticklabels=["Pred: Paid", "Pred: Default"],
+            yticklabels=["Act: Paid", "Act: Default"]
+        )
+        ax.set_title(
+            f"{r['model']}\n"
+            f"AUC={r['auc']:.4f} | "
+            f"KS={r['ks']:.1f} | "
+            f"Gini={r['gini']:.1f}%",
+            fontweight="bold"
+        )
+
+    plt.suptitle(
+        "Confusion Matrices — All Models\n"
+        f"Decision Threshold = {DECISION_THRESHOLD}",
+        fontsize=13, fontweight="bold", y=1.02
+    )
+    plt.tight_layout()
+
+    cm_path = os.path.join(SHAP_DIR, "confusion_matrices.png")
+    plt.savefig(cm_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"   Confusion matrices saved: {cm_path}")
+
+    # --- PRECISION RECALL CURVE ---
+    print("   Generating precision-recall curve...")
+
+    plt.figure(figsize=(10, 8))
+
+    for r in all_results:
+        precision_vals, recall_vals, _ = precision_recall_curve(
+            y_test, r["y_prob"]
+        )
+        plt.plot(
+            recall_vals, precision_vals,
+            label=f"{r['model']} (AP={r['avg_precision']:.4f})",
+            color=colors[r["model"]],
+            linewidth=2.5
+        )
+
+    # Baseline — random classifier precision = default rate
+    baseline = y_test.mean()
+    plt.axhline(
+        y=baseline, color="k", linestyle="--",
+        linewidth=1,
+        label=f"Baseline (default rate = {baseline:.2%})"
+    )
+
+    plt.xlabel("Recall", fontsize=12)
+    plt.ylabel("Precision", fontsize=12)
+    plt.title(
+        "Precision-Recall Curves — All Models\n"
+        "SBA 7(a) Credit Risk Models",
+        fontsize=13, fontweight="bold"
+    )
+    plt.legend(loc="upper right", fontsize=10)
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+
+    pr_path = os.path.join(SHAP_DIR, "precision_recall_curves.png")
+    plt.savefig(pr_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"   Precision-recall curves saved: {pr_path}")
+
+    return comparison, champion_name
+
+
+# =============================================================================
+# STEP 7: SHAP EXPLAINABILITY
+# =============================================================================
+
+def generate_shap_explanations(champion_model, champion_name,
+                                X_test, y_test):
+    print(f"\n[7/8] Generating SHAP explanations for {champion_name}...")
+
+    # --- SHAP EXPLAINER ---
+    # TreeExplainer optimized for tree-based models (XGBoost, LightGBM)
+    # LinearExplainer used for Logistic Regression
+    print("   Building SHAP explainer...")
+
+    if champion_name == "Logistic Regression":
+        explainer = shap.LinearExplainer(
+            champion_model,
+            X_test,
+            feature_perturbation="interventional"
+        )
+    else:
+        explainer = shap.TreeExplainer(champion_model)
+
+    # Calculate SHAP values on test set sample
+    # 5000 rows is statistically representative of 95,536 test rows
+    print("   Calculating SHAP values (sample of 5,000 rows)...")
+
+    sample_idx = np.random.RandomState(RANDOM_STATE).choice(
+        len(X_test), size=5000, replace=False
+    )
+    X_sample = X_test.iloc[sample_idx]
+
+    shap_values = explainer.shap_values(X_sample)
+
+    # Handle LightGBM returning list of arrays
+    if isinstance(shap_values, list):
+        shap_values = shap_values[1]
+
+    print(f"   SHAP values shape: {shap_values.shape}")
+
+    # --- CLEAN FEATURE NAMES FOR DISPLAY ---
+    feature_label_map = {
+        "term_months":              "Term Length (Months)",
+        "interest_rate":            "Interest Rate",
+        "loan_amount":              "Loan Amount",
+        "sba_guarantee_pct":        "SBA Guarantee %",
+        "business_age_mature":      "Business Age: Mature",
+        "loan_size_bucket_micro":   "Loan Size: Micro",
+        "naics_sector_62":          "Industry: Health Care",
+        "loan_size_bucket_large":   "Loan Size: Large",
+        "borr_state_FL":            "State: Florida",
+        "business_age_startup":     "Business Age: Startup",
+        "borr_state_TX":            "State: Texas",
+        "jobs_supported":           "Jobs Supported",
+        "business_age_established": "Business Age: Established",
+        "loan_size_bucket_small":   "Loan Size: Small",
+        "borr_state_CA":            "State: California",
+        "loan_size_bucket_medium":  "Loan Size: Medium",
+        "business_age_new":         "Business Age: New",
+        "naics_sector_48":          "Industry: Transportation",
+        "borr_state_WI":            "State: Wisconsin",
+        "borr_state_NJ":            "State: New Jersey",
+        "borr_state_NY":            "State: New York",
+        "naics_sector_71":          "Industry: Arts & Entertainment",
+        "naics_sector_52":          "Industry: Finance & Insurance",
+        "borr_state_WA":            "State: Washington",
+        "naics_sector_45":          "Industry: Specialty Retail",
+    }
+
+    X_sample_display = X_sample.rename(columns=feature_label_map)
+
+    # --- SAFE BASE VALUE EXTRACTION ---
+    # Handles both Python lists and numpy arrays from LightGBM
+    # np.atleast_1d() converts scalar or array safely before indexing
+    # Prevents shape dimension errors in waterfall plot
+    base_val = explainer.expected_value
+    if isinstance(base_val, (list, np.ndarray)) and \
+            len(np.atleast_1d(base_val)) == 2:
+        base_val = np.atleast_1d(base_val)[1]
+
+    # --- CREATE EXPLANATION OBJECT ---
+    # Modern SHAP requires Explanation object for summary plots
+    # Prevents index mismatch between raw numpy arrays
+    # and renamed DataFrames in current SHAP versions
+    sample_explanation = shap.Explanation(
+        values=shap_values,
+        base_values=base_val,
+        data=X_sample_display.values,
+        feature_names=list(X_sample_display.columns)
+    )
+
+    # --- GLOBAL FEATURE IMPORTANCE ---
+    print("   Generating global SHAP importance chart...")
+
+    plt.figure(figsize=(12, 8))
+    shap.summary_plot(
+        sample_explanation,
+        plot_type="bar",
+        show=False,
+        max_display=20,
+        color="#1565C0"
+    )
+    plt.title(
+        f"Global SHAP Feature Importance — {champion_name}\n"
+        "Mean absolute SHAP value across 5,000 test loans",
+        fontweight="bold"
+    )
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(SHAP_DIR, "shap_global_importance.png"),
+        dpi=150, bbox_inches="tight"
+    )
+    plt.close()
+    print("   Global SHAP chart saved")
+
+    # --- SHAP BEESWARM PLOT ---
+    # Each dot is one loan
+    # Red = high feature value, Blue = low feature value
+    # X-axis = impact on default probability
+    print("   Generating SHAP beeswarm plot...")
+
+    plt.figure(figsize=(12, 8))
+    shap.summary_plot(
+        sample_explanation,
+        show=False,
+        max_display=20
+    )
+    plt.title(
+        f"SHAP Value Distribution — {champion_name}\n"
+        "Red = high feature value | Blue = low feature value",
+        fontweight="bold"
+    )
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(SHAP_DIR, "shap_beeswarm.png"),
+        dpi=150, bbox_inches="tight"
+    )
+    plt.close()
+    print("   SHAP beeswarm chart saved")
+
+    # --- INDIVIDUAL LOAN WATERFALL ---
+    # Highest risk loan in sample — fed into Claude API in Phase 6
+    print("   Generating waterfall chart for highest risk loan...")
+
+    y_prob_sample = champion_model.predict_proba(X_sample)[:, 1]
+    highest_risk_idx = np.argmax(y_prob_sample)
+
+    shap_explanation = shap.Explanation(
+        values=shap_values[highest_risk_idx],
+        base_values=base_val,
+        data=X_sample_display.iloc[highest_risk_idx],
+        feature_names=list(X_sample_display.columns)
+    )
+
+    plt.figure(figsize=(12, 8))
+    shap.waterfall_plot(shap_explanation, show=False, max_display=15)
+    plt.title(
+        f"SHAP Waterfall — Highest Risk Loan\n"
+        f"Predicted Default Probability: "
+        f"{y_prob_sample[highest_risk_idx]:.2%}",
+        fontweight="bold"
+    )
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(SHAP_DIR, "shap_waterfall_high_risk.png"),
+        dpi=150, bbox_inches="tight"
+    )
+    plt.close()
+    print("   Waterfall chart saved")
+
+    # --- SAVE SHAP VALUES FOR PHASE 6 ---
+    # Phase 6 reads this to generate Adverse Action letters
+    # without re-running SHAP computation
+    shap_df = pd.DataFrame(
+        shap_values,
+        columns=X_sample.columns
+    )
+    shap_df["predicted_prob"] = y_prob_sample
+    shap_df["actual_default"] = y_test.iloc[sample_idx].values
+    shap_df.to_csv(
+        os.path.join(OUTPUT_DIR, "shap_values_sample.csv"),
+        index=False
+    )
+    print("   SHAP values saved for Phase 6")
+
+    print(f"\n   SHAP outputs saved to: {SHAP_DIR}")
+
+    return explainer, shap_values, X_sample
