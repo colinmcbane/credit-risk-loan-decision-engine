@@ -63,7 +63,7 @@ RANDOM_STATE = 42
 # K-Fold cross validation folds
 N_FOLDS = 5
 
-# SMOTE sampling strategy — 4:1 ratio as recommended by Gemini review
+# SMOTE sampling strategy — 4:1 ratio
 # Balances class imbalance without generating excessive synthetic points
 # Prevents memory issues on 382K row training set
 SMOTE_STRATEGY = 0.25
@@ -206,7 +206,7 @@ def evaluate_model(model, X_test, y_test, model_name):
 # =============================================================================
 
 def train_logistic_regression(X_train, y_train, X_test, y_test):
-    print("\n[3/8] Training Logistic Regression baseline...")
+    print("\n[2/8] Training Logistic Regression baseline...")
 
     # --- K-FOLD CROSS VALIDATION ---
     # Stratified ensures each fold maintains 7.31% default rate
@@ -304,7 +304,7 @@ def train_logistic_regression(X_train, y_train, X_test, y_test):
 # =============================================================================
 
 def train_xgboost(X_train, y_train, X_test, y_test):
-    print("\n[4/8] Training XGBoost...")
+    print("\n[3/8] Training XGBoost...")
 
     # --- CLASS WEIGHT CALCULATION ---
     # XGBoost uses scale_pos_weight instead of class_weight
@@ -415,7 +415,7 @@ def train_xgboost(X_train, y_train, X_test, y_test):
 # =============================================================================
 
 def train_lightgbm(X_train, y_train, X_test, y_test):
-    print("\n[5/8] Training LightGBM...")
+    print("\n[4/8] Training LightGBM...")
 
     # --- CLASS WEIGHT CALCULATION ---
     # LightGBM uses is_unbalance or scale_pos_weight
@@ -526,7 +526,7 @@ def train_lightgbm(X_train, y_train, X_test, y_test):
 
 def compare_models(lr_results, xgb_results, lgb_results,
                    X_test, y_test):
-    print("\n[6/8] Champion-Challenger model comparison...")
+    print("\n[5/8] Champion-Challenger model comparison...")
 
     all_results = [lr_results, xgb_results, lgb_results]
 
@@ -700,7 +700,7 @@ def compare_models(lr_results, xgb_results, lgb_results,
 
 def generate_shap_explanations(champion_model, champion_name,
                                 X_test, y_test):
-    print(f"\n[7/8] Generating SHAP explanations for {champion_name}...")
+    print(f"\n[6/8] Generating SHAP explanations for {champion_name}...")
 
     # --- SHAP EXPLAINER ---
     # TreeExplainer optimized for tree-based models (XGBoost, LightGBM)
@@ -881,3 +881,262 @@ def generate_shap_explanations(champion_model, champion_name,
     print(f"\n   SHAP outputs saved to: {SHAP_DIR}")
 
     return explainer, shap_values, X_sample
+
+# =============================================================================
+# STEP 8: STRESS TESTING
+# =============================================================================
+
+def run_stress_tests(champion_model, X_test, y_test, scaler_params):
+    print("\n[7/8] Running portfolio stress tests...")
+
+    # --- SAFE SCALER PARAMETERS EXTRACTION ---
+    # Validates scaler_params is a DataFrame before indexing
+    # Prevents AttributeError if wrong object type is passed
+    if isinstance(scaler_params, pd.DataFrame):
+        scaler_dict = scaler_params.set_index("feature")["std"].to_dict()
+    else:
+        raise TypeError(
+            "scaler_params must be a pandas DataFrame with "
+            "'feature' and 'std' columns."
+        )
+
+    def get_std(feature):
+        return scaler_dict.get(feature, 1.0)
+
+    # --- DEFINE STRESS SCENARIOS ---
+    # Shocks defined in raw units then divided by feature std
+    # to convert to standardized space correctly
+    # Example: 2% rate hike = 2.0 / std(interest_rate) in scaled space
+    #
+    # loan_amount intentionally excluded from all stress scenarios
+    # Reducing loan_amount on existing portfolio loans would lower
+    # modeled risk — economically backwards for recession stress testing
+    # term_months extensions used instead to capture liquidity drag
+    # jobs_supported negative shock simulates systemic business downscaling
+    #
+    # Known limitation: tree-based models handle out-of-distribution
+    # feature values by capping at furthest leaf node — severe scenarios
+    # may underestimate true tail risk due to this plateauing effect
+    # Documented here per SR 11-7 model limitation disclosure requirements
+    scenarios = {
+        "Baseline": {},
+        "Rate Hike +200bps": {
+            "interest_rate": 2.0 / get_std("interest_rate")
+        },
+        "Rate Hike +400bps (2022-2023 analog)": {
+            "interest_rate": 4.0 / get_std("interest_rate")
+        },
+        "Pandemic Operational Distress": {
+            "interest_rate": 1.0 / get_std("interest_rate"),
+            "term_months":   3.0 / get_std("term_months")
+        },
+        "Severe Macroeconomic Recession": {
+            "interest_rate":  4.0 / get_std("interest_rate"),
+            "term_months":    6.0 / get_std("term_months"),
+            "jobs_supported": -1.5 / get_std("jobs_supported")
+        }
+    }
+
+    results = []
+    print(f"   Running {len(scenarios)} stress scenarios...")
+
+    for scenario_name, adjustments in scenarios.items():
+        X_stressed = X_test.copy()
+
+        # Apply standardized shocks
+        for feature, shock in adjustments.items():
+            if feature in X_stressed.columns:
+                X_stressed[feature] = X_stressed[feature] + shock
+
+        # Score stressed portfolio
+        stressed_prob = champion_model.predict_proba(X_stressed)[:, 1]
+        stressed_pred = (stressed_prob >= DECISION_THRESHOLD).astype(int)
+
+        mean_pd               = stressed_prob.mean()
+        high_risk_pct         = (stressed_prob > 0.5).mean()
+        predicted_default_rate = stressed_pred.mean()
+
+        # Expected Loss using RAROC framework
+        # LGD = 1 - SBA Guarantee % — bank only loses the non-guaranteed portion
+        # EL = PD * LGD captures true bank exposure after SBA backstop
+        avg_lgd = (
+            1 - X_test["sba_guarantee_pct"].mean()
+            if "sba_guarantee_pct" in X_test.columns
+            else 0.20
+        )
+        expected_loss_rate = mean_pd * avg_lgd
+
+        results.append({
+            "Scenario":               scenario_name,
+            "Mean PD":                round(mean_pd * 100, 2),
+            "High Risk % (PD>50%)":   round(high_risk_pct * 100, 2),
+            "Predicted Default Rate": round(predicted_default_rate * 100, 2),
+            "Avg LGD":                round(avg_lgd * 100, 2),
+            "Expected Loss Rate":     round(expected_loss_rate * 100, 2),
+        })
+
+        print(f"   {scenario_name}:")
+        print(f"      Mean PD:            {mean_pd:.2%}")
+        print(f"      High Risk (PD>50%): {high_risk_pct:.2%}")
+        print(f"      Expected Loss Rate: {expected_loss_rate:.2%}")
+
+    # --- BUILD RESULTS TABLE ---
+    stress_df = pd.DataFrame(results)
+
+    print("\n   --- Stress Test Summary ---")
+    print(stress_df.to_string(index=False))
+
+    # --- SAVE RESULTS ---
+    stress_path = os.path.join(OUTPUT_DIR, "stress_test_results.csv")
+    stress_df.to_csv(stress_path, index=False)
+    print(f"\n   Stress results saved: {stress_path}")
+
+    # --- VISUALIZE ---
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+
+    metrics = ["Mean PD", "High Risk % (PD>50%)", "Expected Loss Rate"]
+    colors  = ["#1565C0", "#B71C1C", "#E65100"]
+    titles  = [
+        "Mean Probability of Default",
+        "High Risk Loans (PD > 50%)",
+        "Expected Loss Rate"
+    ]
+
+    for ax, metric, color, title in zip(axes, metrics, colors, titles):
+        bars = ax.barh(
+            stress_df["Scenario"],
+            stress_df[metric],
+            color=color,
+            alpha=0.8
+        )
+        ax.bar_label(bars, fmt="%.2f%%", padding=3, fontsize=9)
+        ax.set_xlabel(f"{metric} (%)")
+        ax.set_title(title, fontweight="bold")
+        ax.grid(axis="x", alpha=0.3)
+
+    plt.suptitle(
+        "Portfolio Stress Test Results — SBA 7(a) Credit Risk Model\n"
+        "Macroeconomic shock scenarios | SR 11-7 model limitation "
+        "disclosure: tree model tail risk may be underestimated",
+        fontsize=12, fontweight="bold", y=1.02
+    )
+    plt.tight_layout()
+
+    stress_chart_path = os.path.join(SHAP_DIR, "stress_test_results.png")
+    plt.savefig(stress_chart_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"   Stress chart saved: {stress_chart_path}")
+
+    return stress_df
+
+# =============================================================================
+# STEP 9: SAVE CHAMPION MODEL AND RESULTS
+# =============================================================================
+
+def save_champion(champion_model, champion_name, comparison):
+    print("\n[8/8] Saving champion model and final results...")
+
+    # --- SAVE CHAMPION MODEL ---
+    # Saved separately so Phase 6 loads champion directly
+    # without needing to know which algorithm won
+    # Phase 6 reads champion_model.pkl regardless of whether
+    # XGBoost or LightGBM won the challenger comparison
+    champion_path = os.path.join(MODELS_DIR, "champion_model.pkl")
+    joblib.dump(champion_model, champion_path)
+    print(f"   Champion model saved: {champion_path}")
+
+    # --- SAVE CHAMPION NAME ---
+    # Plain text file so Phase 6 can read which model won
+    # without loading the full model object into memory
+    champion_name_path = os.path.join(MODELS_DIR, "champion_name.txt")
+    with open(champion_name_path, "w") as f:
+        f.write(champion_name)
+    print(f"   Champion name saved: {champion_name_path}")
+
+    # --- FINAL SUMMARY ---
+    print("\n=== Phase 4 Complete ===")
+    print(f"\n   Champion Model: {champion_name}")
+    print(f"\n   --- Final Model Comparison ---")
+    print(comparison[["Model", "AUC", "KS Statistic",
+                       "Gini", "Recall", "F1"]].to_string(index=False))
+
+    # --- AUDIT TRAIL ---
+    # Paths generated from actual directory variables
+    # ensures printout matches real file locations
+    # SR 11-7 requires audit trail documentation to be accurate
+    print("\n   --- Files Saved ---")
+    print(f"   {os.path.join(MODELS_DIR, 'logistic_regression.pkl')}")
+    print(f"   {os.path.join(MODELS_DIR, 'xgboost.pkl')}")
+    print(f"   {os.path.join(MODELS_DIR, 'lightgbm.pkl')}")
+    print(f"   {os.path.join(MODELS_DIR, 'champion_model.pkl')}")
+    print(f"   {os.path.join(MODELS_DIR, 'champion_name.txt')}")
+    print(f"   {os.path.join(OUTPUT_DIR, 'model_comparison.csv')}")
+    print(f"   {os.path.join(OUTPUT_DIR, 'shap_values_sample.csv')}")
+    print(f"   {os.path.join(OUTPUT_DIR, 'stress_test_results.csv')}")
+    print(f"   {os.path.join(SHAP_DIR, 'roc_curves.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'confusion_matrices.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'precision_recall_curves.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'shap_global_importance.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'shap_beeswarm.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'shap_waterfall_high_risk.png')}")
+    print(f"   {os.path.join(SHAP_DIR, 'stress_test_results.png')}")
+    print("\nReady for Phase 5 — Fairness Analysis")
+
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+if __name__ == "__main__":
+
+    # Step 1 — Load data
+    X_train, y_train, X_test, y_test, scaler_params = load_data()
+
+    # Step 2 — Evaluation utilities already defined above
+
+    # Step 3 — Logistic Regression baseline
+    lr_model, lr_results = train_logistic_regression(
+        X_train, y_train, X_test, y_test
+    )
+
+    # Step 4 — XGBoost
+    xgb_model, xgb_results = train_xgboost(
+        X_train, y_train, X_test, y_test
+    )
+
+    # Step 5 — LightGBM
+    lgb_model, lgb_results = train_lightgbm(
+        X_train, y_train, X_test, y_test
+    )
+
+    # Step 6 — Champion-Challenger comparison
+    comparison, champion_name = compare_models(
+        lr_results, xgb_results, lgb_results,
+        X_test, y_test
+    )
+
+    # Step 7 — Identify champion model object
+    # Maps champion name string to actual trained model object
+    # compare_models returns name only — this retrieves the object
+    champion_map = {
+        "Logistic Regression": lr_model,
+        "XGBoost":             xgb_model,
+        "LightGBM":            lgb_model
+    }
+    champion_model = champion_map[champion_name]
+
+    # Step 8 — SHAP explainability on champion only
+    # TreeExplainer for XGBoost/LightGBM
+    # LinearExplainer for Logistic Regression
+    explainer, shap_values, X_sample = generate_shap_explanations(
+        champion_model, champion_name, X_test, y_test
+    )
+
+    # Step 9 — Stress testing on champion portfolio
+    # scaler_params passed as DataFrame — validated inside function
+    stress_df = run_stress_tests(
+        champion_model, X_test, y_test, scaler_params
+    )
+
+    # Step 10 — Save champion and final results
+    save_champion(champion_model, champion_name, comparison)
