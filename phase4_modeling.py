@@ -760,6 +760,7 @@ def generate_shap_explanations(champion_model, champion_name,
         "naics_sector_52":          "Industry: Finance & Insurance",
         "borr_state_WA":            "State: Washington",
         "naics_sector_45":          "Industry: Specialty Retail",
+        "borr_state_MN":            "State: Minnesota",
     }
 
     X_sample_display = X_sample.rename(columns=feature_label_map)
