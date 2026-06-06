@@ -957,14 +957,11 @@ def run_stress_tests(champion_model, X_test, y_test, scaler_params):
         high_risk_pct         = (stressed_prob > 0.5).mean()
         predicted_default_rate = stressed_pred.mean()
 
-        # Expected Loss using RAROC framework
-        # LGD = 1 - SBA Guarantee % — bank only loses the non-guaranteed portion
-        # EL = PD * LGD captures true bank exposure after SBA backstop
-        avg_lgd = (
-            1 - X_test["sba_guarantee_pct"].mean()
-            if "sba_guarantee_pct" in X_test.columns
-            else 0.20
-        )
+        # Fixed at 20% — SBA 7(a) guarantees approximately 80% of loan value
+        # Cannot calculate from scaled sba_guarantee_pct — scaler transforms
+        # to mean=0 which produces LGD values above 100% (mathematically invalid)
+        # 0.20 is conservative and consistent with SBA program documentation
+        avg_lgd = 0.20
         expected_loss_rate = mean_pd * avg_lgd
 
         results.append({
@@ -972,7 +969,7 @@ def run_stress_tests(champion_model, X_test, y_test, scaler_params):
             "Mean PD":                round(mean_pd * 100, 2),
             "High Risk % (PD>50%)":   round(high_risk_pct * 100, 2),
             "Predicted Default Rate": round(predicted_default_rate * 100, 2),
-            "Avg LGD":                round(avg_lgd * 100, 2),
+            "Avg LGD":                20.0,
             "Expected Loss Rate":     round(expected_loss_rate * 100, 2),
         })
 
