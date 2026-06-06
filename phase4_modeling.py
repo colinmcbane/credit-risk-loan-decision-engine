@@ -788,25 +788,32 @@ def generate_shap_explanations(champion_model, champion_name,
     # --- GLOBAL FEATURE IMPORTANCE ---
     print("   Generating global SHAP importance chart...")
 
-    plt.figure(figsize=(12, 8))
-    shap.summary_plot(
+    fig = plt.figure(figsize=(14, 11))
+    shap.plots.bar(
         sample_explanation,
-        plot_type="bar",
-        show=False,
         max_display=20,
-        color="#1565C0"
+        show=False
     )
-    plt.title(
+    ax = plt.gca()
+    ax.set_title(
         f"Global SHAP Feature Importance — {champion_name}\n"
         "Mean absolute SHAP value across 5,000 test loans",
         fontweight="bold"
     )
-    plt.tight_layout()
-    plt.savefig(
-        os.path.join(SHAP_DIR, "shap_global_importance.png"),
-        dpi=150, bbox_inches="tight"
+    ax.set_xlabel(
+        "mean(|SHAP value|)\n(average impact on model output magnitude)",
+        labelpad=20,
+        fontsize=12
     )
-    plt.close()
+    ax.xaxis.set_label_coords(0.5, -0.12)
+    fig.subplots_adjust(bottom=0.32, top=0.88, left=0.35, right=0.98)
+    fig.savefig(
+        os.path.join(SHAP_DIR, "shap_global_importance.png"),
+        dpi=150,
+        bbox_inches="tight",
+        pad_inches=0.35
+    )
+    plt.close(fig)
     print("   Global SHAP chart saved")
 
     # --- SHAP BEESWARM PLOT ---
@@ -1011,6 +1018,7 @@ def run_stress_tests(champion_model, X_test, y_test, scaler_params):
         ax.set_xlabel(f"{metric} (%)")
         ax.set_title(title, fontweight="bold")
         ax.grid(axis="x", alpha=0.3)
+        ax.set_xlim(0, stress_df[metric].max() * 1.35)
 
     plt.suptitle(
         "Portfolio Stress Test Results — SBA 7(a) Credit Risk Model\n"
