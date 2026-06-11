@@ -643,3 +643,4 @@ def run_equalized_odds_analysis(raw_test, di_results):
     print("   Equalized odds chart saved")
 
     return eo_results
+
