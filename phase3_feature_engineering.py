@@ -174,6 +174,25 @@ def split_data(df):
         stratify=y
     )
 
+    # Save raw group columns for Phase 5 fairness analysis
+    # X_train.index / X_test.index are the exact rows selected from df_train_pool
+    # so row order here matches train_features.csv / test_features.csv exactly
+    _group_cols = ["borr_state", "business_age", "naics_sector", "loan_amount", "loan_size_bucket"]
+    _group_rename = {
+        "borr_state":   "borrstate",
+        "business_age": "businessage",
+        "naics_sector": "naicscode",
+        "loan_amount":  "grossapproval",
+    }
+    df_train_pool.loc[X_train.index, _group_cols].rename(columns=_group_rename).to_csv(
+        os.path.join(OUTPUT_DIR, "train_groups.csv"), index=False
+    )
+    df_train_pool.loc[X_test.index, _group_cols].rename(columns=_group_rename).to_csv(
+        os.path.join(OUTPUT_DIR, "test_groups.csv"), index=False
+    )
+    print(f"   Group columns saved: train_groups.csv ({len(X_train):,} rows), "
+          f"test_groups.csv ({len(X_test):,} rows)")
+
     print(f"\n   Training set: {len(X_train):,} rows")
     print(f"   Test set:     {len(X_test):,} rows")
     print(f"   Train default rate: {y_train.mean():.2%}")
