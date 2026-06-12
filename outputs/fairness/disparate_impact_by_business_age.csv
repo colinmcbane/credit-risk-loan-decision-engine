@@ -1,0 +1,2 @@
+business_age_clean,total,actual_defaults,predicted_high_risk,mean_prob,actual_default_rate,approval_rate,pct_of_total,di_ratio,di_flag,reference_group,reference_rate
+unknown,95536,6980,18674,0.197738176789101,0.0731,0.8045,1.0,1.0,False,unknown,0.8045

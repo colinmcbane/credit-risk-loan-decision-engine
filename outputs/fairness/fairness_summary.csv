@@ -1,0 +1,5 @@
+Dimension,DI Flags (4/5ths),EO Flags (ratio),Fairlearn DP Diff,Fairlearn EO Diff,Overall Flag
+Geographic (State),2,19,,,True
+Business Age,0,0,0.0,0.0,False
+Industry Sector,1,18,,,True
+Loan Size,0,4,0.0805,0.0394,True

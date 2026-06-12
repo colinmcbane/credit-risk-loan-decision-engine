@@ -1,0 +1,6 @@
+loan_size_bucket,total,actual_defaults,predicted_high_risk,mean_prob,actual_default_rate,approval_rate,pct_of_total,di_ratio,di_flag,reference_group,reference_rate
+jumbo,3428,110,438,0.11563108659929412,0.0321,0.8722,0.0359,1.0,False,jumbo,0.8722
+large,5883,239,940,0.14434944565538274,0.0406,0.8402,0.0616,0.9633,False,jumbo,0.8722
+medium,8184,381,1349,0.15533748367863426,0.0466,0.8352,0.0857,0.9576,False,jumbo,0.8722
+micro,56622,4763,11793,0.2153081849502394,0.0841,0.7917,0.5927,0.9077,False,jumbo,0.8722
+small,21419,1487,4154,0.19529675939082858,0.0694,0.8061,0.2242,0.9242,False,jumbo,0.8722

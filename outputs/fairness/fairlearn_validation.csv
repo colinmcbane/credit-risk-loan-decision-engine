@@ -1,0 +1,5 @@
+,demographic_parity_difference,equalized_odds_difference,dp_flag,eo_flag
+State,0.3627,1.0,True,True
+Business Age,0.0,0.0,False,False
+Industry,0.2367,0.25,True,True
+Loan Size,0.0805,0.0394,False,False
