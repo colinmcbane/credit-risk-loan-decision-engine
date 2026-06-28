@@ -21,7 +21,7 @@ import os
 import time
 from google import genai
 from dotenv import load_dotenv
-from typing import List
+from typing import List, Optional
 
 load_dotenv()
 
@@ -197,13 +197,17 @@ def generate_all_letters(
     df: object,
     output_dir: str,
     dry_run: bool = False,
+    max_letters: Optional[int] = None,
 ) -> dict:
     """
     Generate adverse action letters for all flagged applicants.
 
-    Iterates over all rows where requires_adverse_action is True,
-    calls the Gemini API for each, saves letters to disk as .txt files,
-    and returns a summary dictionary for logging.
+    Iterates over rows where requires_adverse_action is True, calls the
+    Gemini API for each, saves letters to disk as .txt files, and returns
+    a summary dictionary for logging.
+
+    Applies max_letters cap internally so the full DataFrame structure
+    is preserved when passed from the orchestrator.
 
     In dry_run mode, skips the Gemini API call entirely and writes
     a placeholder letter to disk so the full pipeline can be tested
@@ -218,6 +222,9 @@ def generate_all_letters(
         Directory path where individual letter .txt files are saved.
     dry_run : bool
         If True, skips Gemini API calls and writes placeholder letters.
+    max_letters : int, optional
+        Maximum number of adverse action letters to generate. If None,
+        all flagged applicants are processed.
 
     Returns
     -------
@@ -231,7 +238,12 @@ def generate_all_letters(
     os.makedirs(output_dir, exist_ok=True)
 
     adverse_df = df[df["requires_adverse_action"]].copy()
-    total      = len(adverse_df)
+
+    # Apply cap internally — preserves full DataFrame structure upstream
+    if max_letters is not None:
+        adverse_df = adverse_df.head(max_letters)
+
+    total = len(adverse_df)
 
     print(f"[letter_generator] Generating letters for {total:,} applicants "
           f"({'DRY RUN' if dry_run else 'LIVE'})...")
