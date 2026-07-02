@@ -1,7 +1,7 @@
 # Model Card — SBA 7(a) Credit Risk Decision Engine
 
 **Author:** Colin McBane
-**Date:** 2026-06-11
+**Date:** 2026-06-25
 **Model:** LightGBM
 **Version:** 1.0
 

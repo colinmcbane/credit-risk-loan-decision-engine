@@ -27,7 +27,7 @@ load_dotenv()
 
 # ── Gemini configuration ──────────────────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL   = "gemini-2.0-flash-lite"
+GEMINI_MODEL   = "models/gemini-3.1-flash-lite"
 
 # ── Creditor information inserted into every letter ───────────────────────────
 CREDITOR_NAME    = "SBA Credit Risk Decision Engine"

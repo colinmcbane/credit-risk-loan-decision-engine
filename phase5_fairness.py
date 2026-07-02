@@ -820,8 +820,32 @@ def run_shap_fairness_audit():
         color=bar_colors[::-1],
         alpha=0.8
     )
+    shap_label_map = {
+        "term_months":              "Term Length (Months)",
+        "interest_rate":            "Interest Rate",
+        "sba_guarantee_pct":        "SBA Guarantee %",
+        "jobs_supported":           "Jobs Supported",
+        "loan_amount":              "Loan Amount",
+        "business_age_mature":      "Business Age: Mature",
+        "business_age_established": "Business Age: Established",
+        "business_age_new":         "Business Age: New",
+        "business_age_startup":     "Business Age: Startup",
+        "naics_sector_62":          "Industry: Health Care",
+        "naics_sector_52":          "Industry: Finance & Insurance",
+        "naics_sector_48":          "Industry: Transportation",
+        "borr_state_FL":            "State: Florida",
+        "borr_state_CA":            "State: California",
+        "borr_state_MN":            "State: Minnesota",
+        "borr_state_TX":            "State: Texas",
+        "borr_state_WI":            "State: Wisconsin",
+        "loan_size_bucket_micro":   "Loan Size: Micro",
+        "loan_size_bucket_small":   "Loan Size: Small",
+    }
+    clean_labels = [
+        shap_label_map.get(f, f) for f in top15.index[::-1]
+    ]
     axes[1].set_yticks(range(len(top15)))
-    axes[1].set_yticklabels(top15.index[::-1], fontsize=9)
+    axes[1].set_yticklabels(clean_labels, fontsize=9)
     axes[1].set_xlabel("% of Total SHAP Magnitude")
     axes[1].set_title(
         "Top 15 Features — SHAP % Contribution\n"

@@ -1,4 +1,7 @@
 .venv/
 data/
 *.db
+.DS_Store.env
+
+.env
 .DS_Store
