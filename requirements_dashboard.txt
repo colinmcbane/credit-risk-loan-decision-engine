@@ -1,0 +1,10 @@
+dash
+dash-bootstrap-components
+plotly
+pandas
+numpy
+joblib
+lightgbm
+python-dotenv
+google-genai
+gunicorn
