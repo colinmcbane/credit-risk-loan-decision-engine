@@ -1,0 +1,201 @@
+term_months,interest_rate,loan_amount,sba_guarantee_pct,business_age_mature,loan_size_bucket_micro,naics_sector_62,loan_size_bucket_large,borr_state_FL,business_age_startup,borr_state_TX,jobs_supported,business_age_established,loan_size_bucket_small,borr_state_CA,loan_size_bucket_medium,business_age_new,naics_sector_48,borr_state_WI,borr_state_NJ,borr_state_NY,naics_sector_71,naics_sector_52,borr_state_WA,naics_sector_45,borr_state_MN,predicted_prob,source,decision,requires_adverse_action,reason_codes
+240,0.065,1121650.14,0.84,1,0,0,0,0,0,0,296,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.04565182532182082,Gemini,Approved,False,
+234,0.063,776472.93,0.83,1,0,0,0,0,0,0,457,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0.7723901412434964,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+268,0.061,1663189.5,0.76,1,0,1,0,0,0,0,229,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.8729935190780832,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+204,0.057,1716382.11,0.83,1,0,0,0,0,0,1,166,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.9036209230975958,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+278,0.061,1134262.29,0.81,1,0,0,0,0,0,0,206,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0.9279361435008211,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+230,0.068,1434316.32,0.84,1,0,0,0,0,0,0,419,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.8838001037944679,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+289,0.052,997793.18,0.78,1,0,0,0,0,0,0,405,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0.473617067155223,Gemini,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+294,0.054,1515286.07,0.82,1,0,0,0,0,0,0,147,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.9306341904471878,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+258,0.051,1925345.92,0.77,1,0,0,0,1,0,0,165,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.9311033894525588,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+221,0.057,597089.47,0.79,1,0,0,0,0,0,0,452,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.8841257808050949,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+288,0.067,419830.49,0.8,1,0,0,0,0,0,0,317,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.7725699484296312,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+234,0.051,894868.04,0.83,1,0,0,0,0,0,0,278,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0.6558553818034623,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+239,0.068,1310156.45,0.75,1,0,0,0,0,0,0,447,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.7701219717106143,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+229,0.067,613725.13,0.8,1,0,0,0,0,0,0,391,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0.7639770314624933,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+209,0.059,1902264.49,0.8,1,0,0,0,0,0,0,131,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.9647319079329578,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.088,140810.02,0.67,0,0,0,0,0,0,0,48,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.16598290118691653,Gemini,Approved,False,
+204,0.076,211833.09,0.73,0,0,0,0,0,0,0,67,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.8469963309537615,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+203,0.081,95743.68,0.74,0,0,0,0,0,0,0,76,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.8051951229492974,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+172,0.073,285368.51,0.66,0,0,0,0,1,0,0,51,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.669934133907652,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+135,0.086,134375.49,0.73,0,0,0,0,0,0,0,67,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.6958605097081029,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+174,0.087,55097.35,0.67,0,0,0,0,0,0,0,72,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.9026737997105061,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+132,0.089,286377.92,0.68,0,0,1,0,0,0,0,91,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.49252726515231887,Gemini,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+123,0.072,216892.42,0.74,0,0,0,0,0,0,0,46,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.26328648783097996,Gemini,Approved,False,
+138,0.077,329881.0,0.7,0,0,0,0,0,0,1,28,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.756020523286048,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+177,0.088,294326.68,0.72,0,0,0,0,0,0,0,74,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.6729829142133621,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+186,0.088,140220.89,0.68,0,0,0,0,0,0,0,80,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.6178427888976319,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+208,0.075,107147.28,0.67,0,0,0,0,0,0,0,29,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.8157929162625028,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+133,0.08,300763.53,0.73,0,0,0,0,0,0,0,29,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.7457261558512549,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+235,0.081,257530.82,0.74,0,0,0,0,0,0,0,30,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.8597174077109859,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+122,0.074,167156.45,0.69,0,0,0,0,0,0,0,94,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.22620631838489472,Gemini,Approved,False,
+169,0.071,326910.74,0.72,0,0,0,0,0,0,0,95,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.6426683659612438,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+171,0.083,165276.43,0.74,0,0,0,0,0,0,0,24,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.8143114985713706,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+147,0.086,60655.22,0.71,0,0,0,0,0,0,0,51,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.8119614603071612,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+155,0.077,53907.3,0.71,0,0,0,0,0,0,0,28,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.8201769677455247,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+133,0.085,278910.66,0.69,0,0,0,0,0,0,0,67,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.6508181540748703,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+116,0.116,2180582.49,0.6,1,0,0,1,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9115978146890628,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+111,0.117,14349.52,0.59,0,1,0,0,0,1,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9796008817226357,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+116,0.098,3480036.95,0.56,0,0,0,1,0,1,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9704211918725111,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+114,0.106,35878.71,0.62,0,1,0,0,0,1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9332567142921122,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+102,0.117,4663363.84,0.51,0,0,0,1,0,1,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9687671315707385,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+69,0.093,42566.24,0.56,0,1,0,0,0,1,0,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9649533665196403,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+82,0.116,2631580.89,0.61,0,0,0,1,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9800529925932743,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+101,0.091,37298.54,0.59,0,1,0,0,0,1,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9671784316486496,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+65,0.099,2853245.89,0.58,0,0,0,1,0,1,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9830019647998104,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+70,0.104,13686.97,0.51,0,1,0,0,0,1,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9765952549449934,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.113,4460012.33,0.6,0,0,0,1,0,1,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.8134798193163189,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+67,0.113,40183.92,0.57,0,1,0,0,0,1,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9807262315208221,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+108,0.108,2393275.92,0.61,0,0,0,1,0,1,0,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.963013801530257,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+64,0.094,36087.64,0.56,0,1,0,0,0,1,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9530893508983931,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+73,0.102,4080928.71,0.59,0,0,0,1,0,1,0,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.9886733099733553,Gemini,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+240,0.057,850000.0,0.85,1,0,0,0,0,0,1,85,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.1535337384427946,ChatGPT,Approved,False,
+300,0.055,1250000.0,0.85,1,0,1,0,0,0,0,140,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0.00041027070057347327,ChatGPT,Approved,False,
+240,0.06,650000.0,0.8,1,0,0,0,0,0,0,70,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0.060836016881751956,ChatGPT,Approved,False,
+300,0.058,1750000.0,0.85,1,0,0,0,0,0,0,180,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0.0030619573363340298,ChatGPT,Approved,False,
+180,0.062,450000.0,0.8,1,0,0,0,1,0,0,55,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.328287006692314,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+240,0.059,900000.0,0.85,1,0,0,0,0,0,0,95,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0.11936347591991889,ChatGPT,Approved,False,
+300,0.061,1100000.0,0.82,1,0,0,0,0,0,0,120,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0.007937588429516201,ChatGPT,Approved,False,
+240,0.06,750000.0,0.85,1,0,0,0,0,0,0,65,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0.10184388528574925,ChatGPT,Approved,False,
+180,0.065,550000.0,0.8,1,0,0,0,0,0,0,60,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0.15625360798300864,ChatGPT,Approved,False,
+300,0.056,2000000.0,0.85,1,0,1,1,0,0,1,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0008312656464833841,ChatGPT,Approved,False,
+240,0.063,950000.0,0.8,1,0,0,0,0,0,0,90,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.23902962838422986,ChatGPT,Approved,False,
+300,0.057,1400000.0,0.85,1,0,0,0,0,0,0,160,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0.003156085436465703,ChatGPT,Approved,False,
+240,0.06,700000.0,0.82,1,0,0,0,0,0,0,75,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0.14568609600830526,ChatGPT,Approved,False,
+180,0.064,500000.0,0.8,1,0,0,0,0,0,0,50,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.11344325872315364,ChatGPT,Approved,False,
+300,0.059,1600000.0,0.85,1,0,0,0,0,0,0,170,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0.0036599331102113745,ChatGPT,Approved,False,
+120,0.082,300000.0,0.7,0,0,0,0,0,0,1,30,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0.086312060493722,ChatGPT,Approved,False,
+84,0.095,85000.0,0.6,0,0,0,0,1,0,0,15,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0.47333448258663463,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+120,0.075,750000.0,0.75,0,0,0,0,0,0,0,80,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0.010743004614141564,ChatGPT,Approved,False,
+180,0.07,1200000.0,0.78,0,0,1,0,0,0,0,110,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0.03664317365743415,ChatGPT,Approved,False,
+96,0.09,45000.0,0.65,0,1,0,0,0,0,0,8,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0.6203606860084182,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+120,0.085,250000.0,0.7,0,0,0,0,0,0,0,25,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0.09474212792261787,ChatGPT,Approved,False,
+180,0.073,900000.0,0.75,0,0,0,0,0,0,1,95,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0.047365241129724844,ChatGPT,Approved,False,
+120,0.088,150000.0,0.68,0,0,0,0,0,0,0,18,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0.16555674847461938,ChatGPT,Approved,False,
+96,0.1,60000.0,0.6,0,0,0,0,0,0,0,10,0,1,0,0,1,0,0,0,0,0,0,0,1,0,0.7671372464640055,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.078,1750000.0,0.72,0,0,0,0,1,0,0,130,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0.027558548914587627,ChatGPT,Approved,False,
+120,0.081,400000.0,0.7,0,0,0,0,0,0,0,45,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0.027585572264508043,ChatGPT,Approved,False,
+150,0.077,950000.0,0.74,0,0,0,0,0,0,0,100,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0.3852936700440521,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+90,0.105,35000.0,0.55,0,1,0,0,0,0,0,5,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.8325985942655134,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.074,800000.0,0.76,0,0,0,0,0,0,0,85,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0.08208255112013942,ChatGPT,Approved,False,
+120,0.086,500000.0,0.67,0,0,0,0,0,0,0,55,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.06741914890410268,ChatGPT,Approved,False,
+72,0.115,2500000.0,0.5,0,0,0,1,0,1,0,12,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.8181754434228721,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.11,30000.0,0.55,0,1,0,0,0,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.25690419004556353,ChatGPT,Approved,False,
+84,0.105,75000.0,0.58,0,0,0,0,0,1,1,7,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0.3589197550246467,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+96,0.098,4000000.0,0.52,0,0,0,1,0,1,0,20,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0.8043643077421917,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.12,10000.0,0.5,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.5099833547426035,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Micro Loan Size Risk
+90,0.108,2200000.0,0.55,0,0,0,1,0,1,0,15,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.9675963075952424,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.113,45000.0,0.54,0,1,0,0,0,1,0,4,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0.673417442407749,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+120,0.102,650000.0,0.62,0,0,0,0,0,0,1,35,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0.18773613792717403,ChatGPT,Approved,False,
+60,0.118,150000.0,0.56,0,0,0,0,0,1,0,6,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0.3501727795792085,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+84,0.107,2800000.0,0.5,0,0,0,1,0,1,0,10,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.18652905303751305,ChatGPT,Approved,False,
+72,0.112,90000.0,0.57,0,0,0,0,0,1,0,9,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0.5470702620807045,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+96,0.099,350000.0,0.6,0,0,0,0,0,0,0,20,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0.9045480744224391,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.115,18000.0,0.5,0,1,0,0,0,1,0,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.34794699953946673,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+84,0.109,2100000.0,0.52,0,0,0,1,0,1,0,18,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.7302228597543347,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.116,50000.0,0.55,0,0,0,0,0,1,0,5,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0.6227804452146759,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.117,600000.0,0.5,0,0,0,0,0,1,0,8,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.3976952762839643,ChatGPT,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+96,0.106,125000.0,0.6,0,0,0,0,0,1,0,11,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0.8961506007781761,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.12,3200000.0,0.5,0,0,0,1,0,1,0,4,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.2545500303999939,ChatGPT,Approved,False,
+60,0.115,30000.0,0.55,0,1,0,0,1,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.5042133593257314,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.118,3200000.0,0.52,0,0,0,1,0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.805507115323308,ChatGPT,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+240,0.065,850000.0,0.75,1,0,1,0,0,0,0,45,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.060169144327686844,Claude,Approved,False,
+300,0.062,1200000.0,0.8,1,0,0,0,1,0,0,62,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.008962832341938672,Claude,Approved,False,
+240,0.068,950000.0,0.75,1,0,0,0,0,0,0,38,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.1591991026414255,Claude,Approved,False,
+300,0.06,1500000.0,0.85,1,0,0,0,0,0,1,80,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.0041035000384116675,Claude,Approved,False,
+240,0.063,780000.0,0.78,1,0,0,0,0,0,0,55,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0.22634655987056143,Claude,Approved,False,
+300,0.066,1100000.0,0.8,1,0,0,0,0,0,0,70,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.002096268430032441,Claude,Approved,False,
+240,0.064,920000.0,0.75,1,0,1,0,0,0,0,42,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.11912509781776369,Claude,Approved,False,
+300,0.061,1350000.0,0.82,1,0,0,0,0,0,0,90,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0.035861208915450804,Claude,Approved,False,
+240,0.067,680000.0,0.78,1,0,0,0,1,0,0,33,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.16310899480122806,Claude,Approved,False,
+300,0.063,1750000.0,0.85,1,0,0,0,0,0,0,110,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0.003097351410636932,Claude,Approved,False,
+240,0.065,890000.0,0.8,1,0,0,0,0,0,0,48,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0.11824937838158668,Claude,Approved,False,
+300,0.062,1050000.0,0.75,1,0,0,0,0,0,0,65,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.00283326103354266,Claude,Approved,False,
+240,0.066,720000.0,0.82,1,0,1,0,0,0,0,37,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.2122731361685646,Claude,Approved,False,
+300,0.064,1600000.0,0.8,1,0,0,0,0,0,1,95,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.005593286619649714,Claude,Approved,False,
+240,0.063,980000.0,0.78,1,0,0,0,0,0,0,52,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0.18661903726341889,Claude,Approved,False,
+180,0.072,250000.0,0.7,0,0,0,0,0,0,0,18,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0.22010823932714876,Claude,Approved,False,
+120,0.078,85000.0,0.65,0,0,0,0,1,0,0,8,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.3862420943946102,Claude,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.075,420000.0,0.72,0,0,1,0,0,0,1,25,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0.07890854464404118,Claude,Approved,False,
+120,0.08,175000.0,0.68,0,0,0,0,0,0,0,12,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0.04538452463763357,Claude,Approved,False,
+180,0.073,550000.0,0.7,0,0,0,0,0,0,0,30,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0.12706479710968038,Claude,Approved,False,
+120,0.077,320000.0,0.65,0,0,0,0,0,0,0,20,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0.10561955817755488,Claude,Approved,False,
+180,0.074,680000.0,0.72,0,0,0,0,0,0,1,40,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0.09949374842444615,Claude,Approved,False,
+120,0.079,140000.0,0.67,0,0,0,0,0,0,0,10,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0.13237203309622242,Claude,Approved,False,
+180,0.076,450000.0,0.7,0,0,0,0,1,0,0,28,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0.12170694815185744,Claude,Approved,False,
+120,0.075,2800000.0,0.65,0,0,0,1,0,0,0,150,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0.009422332988816213,Claude,Approved,False,
+180,0.073,95000.0,0.68,0,0,1,0,0,0,0,7,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0.09127009904957481,Claude,Approved,False,
+120,0.078,380000.0,0.7,0,0,0,0,0,0,0,22,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0.10973705337291982,Claude,Approved,False,
+180,0.074,210000.0,0.65,0,0,0,0,0,0,0,15,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0.13831672182577887,Claude,Approved,False,
+120,0.077,590000.0,0.72,0,0,0,0,0,0,0,35,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0.03515268175107809,Claude,Approved,False,
+180,0.076,3200000.0,0.68,0,0,0,1,0,0,1,175,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0.021278949672707617,Claude,Approved,False,
+120,0.079,270000.0,0.65,0,0,0,0,0,0,0,16,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0.1084772094675672,Claude,Approved,False,
+180,0.073,760000.0,0.7,0,0,0,0,0,0,0,45,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0.049469699181137916,Claude,Approved,False,
+120,0.075,130000.0,0.68,0,0,0,0,0,0,0,9,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0.043412148566723915,Claude,Approved,False,
+180,0.077,490000.0,0.72,0,0,1,0,0,0,0,29,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0.12838690325559673,Claude,Approved,False,
+120,0.076,2500000.0,0.65,0,0,0,1,1,0,0,130,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0.024745038007243383,Claude,Approved,False,
+60,0.105,18000.0,0.5,0,1,0,0,0,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.13039366653551684,Claude,Approved,False,
+72,0.098,32000.0,0.52,0,1,0,0,0,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.6317335748625541,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.11,28000.0,0.5,0,1,0,0,1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.6123332983729294,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.102,2200000.0,0.55,0,0,0,1,0,1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.784287370081716,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.115,22000.0,0.5,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.15948981092554207,Claude,Approved,False,
+72,0.108,45000.0,0.52,0,1,0,0,0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.8107072587781692,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.112,3500000.0,0.5,0,0,0,1,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0913203802432135,Claude,Approved,False,
+72,0.099,15000.0,0.55,0,1,0,0,0,0,0,2,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0.9273853304422076,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.118,38000.0,0.5,0,1,0,0,0,1,0,2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0.09849798479381541,Claude,Approved,False,
+72,0.105,4200000.0,0.52,0,0,0,1,0,1,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.6382450681877075,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.11,12000.0,0.5,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.22502359681365003,Claude,Approved,False,
+72,0.115,42000.0,0.55,0,1,0,0,0,0,0,3,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0.5532772929639519,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.108,2900000.0,0.5,0,0,0,1,0,1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1869497789347825,Claude,Approved,False,
+72,0.12,25000.0,0.5,0,1,0,0,0,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.7420186583490953,Claude,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.118,35000.0,0.52,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0.2109808314528561,Claude,Approved,False,
+240,0.062,500000.0,0.8,1,0,1,0,0,0,1,45,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0.11756179472501499,Copilot,Approved,False,
+216,0.058,750000.0,0.82,1,0,0,0,0,0,0,60,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0.7526132138905332,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.065,400000.0,0.78,1,0,0,0,1,0,0,35,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.12843065124945285,Copilot,Approved,False,
+300,0.055,1500000.0,0.85,1,0,1,0,0,0,0,80,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0.0009845422164215113,Copilot,Approved,False,
+210,0.06,600000.0,0.79,1,0,0,0,0,0,0,50,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0.8791654301098867,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+192,0.068,900000.0,0.77,1,0,0,0,0,0,0,70,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.6789056347641531,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.063,550000.0,0.81,1,0,0,0,0,0,0,40,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.13408034979748037,Copilot,Approved,False,
+240,0.059,800000.0,0.83,1,0,1,0,0,0,0,55,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0.11127985864334033,Copilot,Approved,False,
+264,0.057,1200000.0,0.84,1,0,0,0,0,0,0,95,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.9557398763953624,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+228,0.061,700000.0,0.8,1,0,0,0,0,0,0,52,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0.9426770268312029,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+252,0.056,1000000.0,0.82,1,0,0,0,1,0,0,88,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0.7222692589568788,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+204,0.067,450000.0,0.78,1,0,0,0,0,0,0,38,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.8633997561935565,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+216,0.064,650000.0,0.79,1,0,1,0,0,0,0,47,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0.8286200301459019,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+300,0.058,1800000.0,0.85,1,0,0,0,0,0,0,120,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0.007915094025391055,Copilot,Approved,False,
+192,0.06,520000.0,0.81,1,0,0,0,0,0,0,42,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.4554913534889025,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+144,0.075,300000.0,0.72,0,0,0,0,0,0,1,28,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0.4806884803454726,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+120,0.082,90000.0,0.7,0,0,0,0,0,0,0,12,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0.10540449243363444,Copilot,Approved,False,
+180,0.078,260000.0,0.76,0,0,1,0,0,0,0,22,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0.2338957643118733,Copilot,Approved,False,
+96,0.085,480000.0,0.68,0,0,0,0,0,0,0,30,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0.7583850671739125,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+168,0.073,150000.0,0.74,0,0,0,0,1,0,0,18,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0.4898504348801507,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+132,0.077,80000.0,0.71,0,0,0,0,0,0,0,10,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0.40580775953891385,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+156,0.069,320000.0,0.75,0,0,0,0,0,0,0,26,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0.6357085204863685,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+120,0.081,420000.0,0.7,0,0,0,0,0,0,0,24,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0.11891986247138879,Copilot,Approved,False,
+180,0.074,60000.0,0.73,0,1,0,0,0,0,0,8,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0.25246279955226486,Copilot,Approved,False,
+168,0.072,280000.0,0.76,0,0,0,0,0,0,0,20,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0.8846154715379796,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+144,0.079,360000.0,0.69,0,0,0,0,0,0,0,27,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0.6205542385510403,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+132,0.071,52000.0,0.74,0,1,0,0,0,0,0,6,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.48206583217024684,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+180,0.068,340000.0,0.77,0,0,0,0,0,0,0,25,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0.17012952836548353,Copilot,Approved,False,
+120,0.083,1500000.0,0.65,0,0,0,0,0,1,0,40,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0.06280018880925564,Copilot,Approved,False,
+84,0.095,40000.0,0.55,0,1,0,0,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.10628154333884629,Copilot,Approved,False,
+72,0.11,30000.0,0.5,0,1,0,0,1,1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.8752730294602157,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.12,25000.0,0.52,0,1,0,0,0,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.2790177041624069,Copilot,Approved,False,
+84,0.098,2200000.0,0.54,0,0,0,1,0,1,0,55,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.6564363770864438,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+96,0.105,2600000.0,0.53,0,0,0,1,0,1,0,60,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0.9007246959656311,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.115,4500000.0,0.5,0,0,0,1,0,1,0,80,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0.5847482690664983,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+60,0.11,1800000.0,0.56,0,0,1,0,0,1,0,35,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0.7894813826151825,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+90,0.102,4800000.0,0.52,0,0,0,1,0,1,0,95,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0.8525462722097349,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+84,0.108,15000.0,0.51,0,1,0,0,0,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0.5151135472220162,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.112,42000.0,0.53,0,1,0,0,0,1,0,6,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0.5061631553785252,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+60,0.118,3500000.0,0.55,0,0,0,1,0,1,0,70,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.4074084967389754,Copilot,Approved - Unfavorable Terms,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+96,0.099,2800000.0,0.57,0,0,0,1,0,1,0,65,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0.8113872180981868,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+66,0.107,520000.0,0.6,0,0,0,0,0,1,0,22,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0.9590518855262806,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+78,0.095,48000.0,0.58,0,1,0,0,0,1,0,7,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0.9435797341296959,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+90,0.101,2300000.0,0.59,0,0,0,1,0,1,0,58,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0.9435916648550284,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.109,3800000.0,0.55,0,0,0,1,0,1,0,75,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0.6974861293223342,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Employment Impact | Insufficient Loan Term Length
+60,0.115,4200000.0,0.5,0,0,0,1,0,1,0,90,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0.12016578179260695,Copilot,Approved,False,
+84,0.104,20000.0,0.52,0,1,0,0,0,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.27155725790826984,Copilot,Approved,False,
+66,0.097,150000.0,0.61,0,0,0,0,0,1,0,18,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0.9297674281844278,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+72,0.112,38000.0,0.55,0,1,0,0,0,1,0,6,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0.584831726755508,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact
+66,0.105,2500000.0,0.58,0,0,0,1,0,1,0,52,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0.9367458227520729,Copilot,Denied,True,Loan Amount Outside Acceptable Range | Insufficient Loan Term Length | Insufficient Employment Impact

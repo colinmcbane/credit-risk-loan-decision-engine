@@ -136,3 +136,58 @@ def get_predictions(df: pd.DataFrame) -> pd.Series:
         Predicted default probabilities indexed to match df.
     """
     return df["predicted_prob"].copy()
+
+def preprocess_and_scale(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Preprocess and scale raw loan applicant data to match the
+    Phase 3 training distribution before scoring.
+
+    Applies two transformations:
+        1. Converts interest_rate from decimal to percentage
+           (e.g. 0.065 → 6.5) to match training data format
+        2. Applies z-score scaling to continuous features using
+           parameters saved in data/processed/scaler_params.csv
+
+    Must be called on any raw input data before passing to the
+    champion model — synthetic test data, dashboard submissions,
+    or any out-of-sample scoring task.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Raw loan applicant DataFrame with 26 feature columns.
+
+    Returns
+    -------
+    pd.DataFrame
+        Scaled DataFrame ready for champion model scoring.
+    """
+    scaler_path = os.path.join(
+        os.path.dirname(__file__), "..", "data", "processed", "scaler_params.csv"
+    )
+    scaler = pd.read_csv(scaler_path).set_index("feature")
+
+    df = df.copy()
+
+    # Convert interest_rate from decimal to percentage if needed.
+    # Training data stored interest_rate as e.g. 6.5 not 0.065.
+    # Check max value to avoid double-converting already-scaled data.
+    if df["interest_rate"].max() <= 1.0:
+        df["interest_rate"] = df["interest_rate"] * 100
+
+    # Apply z-score scaling to continuous features only.
+    # Binary one-hot columns do not need scaling.
+    continuous_features = [
+        "loan_amount", "sba_guarantee_pct",
+        "interest_rate", "term_months", "jobs_supported"
+    ]
+
+    for feature in continuous_features:
+        if feature in scaler.index and feature in df.columns:
+            mean = scaler.loc[feature, "mean"]
+            std  = scaler.loc[feature, "std"]
+            if std > 0:
+                df[feature] = (df[feature] - mean) / std
+
+    print(f"[scorer] Features scaled to match Phase 3 training distribution.")
+    return df
