@@ -1,6 +1,2 @@
 timestamp,applicant_id,recipient,decision,status,error
-2026-07-02 16:14:57,0,colinpmcbane@gmail.com,Denied,sent,
-2026-07-02 16:14:57,8,colinpmcbane@gmail.com,Approved - Unfavorable Terms,sent,
-2026-07-02 16:14:58,10,colinpmcbane@gmail.com,Approved - Unfavorable Terms,sent,
-2026-07-02 16:14:59,11,colinpmcbane@gmail.com,Denied,sent,
-2026-07-02 16:15:00,35,colinpmcbane@gmail.com,Denied,sent,
+2026-07-02 18:08:01,colinpmcbane@gmail.com,colinpmcbane@gmail.com,Denied,sent,

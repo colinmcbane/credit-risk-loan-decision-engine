@@ -96,39 +96,40 @@ def build_roc_chart(df: pd.DataFrame) -> go.Figure:
 
 
 def build_ks_gini_chart(df: pd.DataFrame) -> go.Figure:
-    """Build KS and Gini comparison chart."""
-    fig = go.Figure()
+    """Build KS and Gini as side by side subplots."""
+    from plotly.subplots import make_subplots
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=("KS Statistic", "Gini Coefficient (%)"),
+    )
 
     fig.add_trace(go.Bar(
-        name="KS Statistic",
         x=df["Model"],
         y=df["KS Statistic"],
         marker_color="#3498DB",
         text=[f"{v:.1f}" for v in df["KS Statistic"]],
         textposition="outside",
-    ))
+        showlegend=False,
+    ), row=1, col=1)
 
     fig.add_trace(go.Bar(
-        name="Gini (%)",
         x=df["Model"],
         y=df["Gini"],
         marker_color="#9B59B6",
         text=[f"{v:.1f}%" for v in df["Gini"]],
         textposition="outside",
-    ))
+        showlegend=False,
+    ), row=1, col=2)
 
     fig.update_layout(
-        title="KS Statistic & Gini Coefficient by Model",
-        barmode="group",
-        yaxis_title="Value",
+        height=380,
+        margin=dict(t=60, b=40),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=350,
-        margin=dict(t=50, b=40),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=True, gridcolor="#eee")
+    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=1, range=[0, 110])
+    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=2, range=[0, 110])
     return fig
 
 
@@ -141,26 +142,35 @@ def build_confusion_matrix(df: pd.DataFrame) -> go.Figure:
     fn = int(champion["False Neg"])
     tp = int(champion["True Pos"])
 
-    z     = [[tn, fp], [fn, tp]]
-    text  = [[f"TN: {tn:,}", f"FP: {fp:,}"],
-             [f"FN: {fn:,}", f"TP: {tp:,}"]]
+    z    = [[tp, fn], [fp, tn]]
+    text = [
+        [f"<b>TP</b><br>{tp:,}<br>Correctly caught defaults",
+         f"<b>FN</b><br>{fn:,}<br>Missed defaults"],
+        [f"<b>FP</b><br>{fp:,}<br>Wrongful flags",
+         f"<b>TN</b><br>{tn:,}<br>Correctly approved"],
+    ]
 
     fig = go.Figure(go.Heatmap(
         z=z,
         text=text,
         texttemplate="%{text}",
-        colorscale="Blues",
+        colorscale=[
+            [0, "#EBF5FB"],
+            [0.5, "#5DADE2"],
+            [1, "#1A5276"],
+        ],
         showscale=False,
-        x=["Predicted: Paid", "Predicted: Default"],
-        y=["Actual: Paid", "Actual: Default"],
+        x=["Predicted: Default", "Predicted: Paid"],
+        y=["Actual: Default", "Actual: Paid"],
     ))
 
     fig.update_layout(
         title=f"Confusion Matrix — {champion['Model']} (Champion)",
-        height=350,
-        margin=dict(t=50, b=40),
+        height=380,
+        margin=dict(t=50, b=40, l=120, r=20),
         plot_bgcolor="white",
         paper_bgcolor="white",
+        font=dict(size=12),
     )
     return fig
 
