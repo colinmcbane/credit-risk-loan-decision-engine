@@ -51,9 +51,11 @@ def get_model():
     """Load champion model lazily on first use."""
     global CHAMPION_MODEL
     if CHAMPION_MODEL is None:
+        print(f"[live] Resolved model path: {CHAMPION_MODEL_PATH}")
+        print(f"[live] Model file exists: {os.path.exists(CHAMPION_MODEL_PATH)}")
         try:
             CHAMPION_MODEL = joblib.load(CHAMPION_MODEL_PATH)
-            print(f"[live] Champion model loaded from {CHAMPION_MODEL_PATH}")
+            print(f"[live] Champion model loaded successfully")
         except Exception as e:
             print(f"[live] Failed to load model: {e}")
     return CHAMPION_MODEL
