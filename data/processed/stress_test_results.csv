@@ -1,0 +1,6 @@
+Scenario,Mean PD,High Risk % (PD>50%),Predicted Default Rate,Avg LGD,Expected Loss Rate
+Baseline,19.77,16.17,19.55,20.0,3.95
+Rate Hike +200bps,26.49,21.3,26.82,20.0,5.3
+Rate Hike +400bps (2022-2023 analog),32.31,25.2,32.23,20.0,6.46
+Pandemic Operational Distress,53.26,53.99,61.09,20.0,10.65
+Severe Macroeconomic Recession,75.11,78.85,82.73,20.0,15.02
