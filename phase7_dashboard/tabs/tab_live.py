@@ -295,16 +295,24 @@ def score_application(n_clicks, email, loan_amount, term_months,
     """Score a submitted loan application and return the decision."""
 
     # ── Validate inputs ───────────────────────────────────────────────────
+    # Check for missing fields
     missing = []
-    if not email:             missing.append("Email Address")
-    if loan_amount is None:   missing.append("Loan Amount")
-    if term_months is None:   missing.append("Loan Term")
-    if interest_rate is None: missing.append("Interest Rate")
-    if sba_guarantee is None: missing.append("SBA Guarantee")
-    if jobs is None:          missing.append("Jobs Supported")
-    if not business_age:      missing.append("Business Age")
-    if not industry:          missing.append("Industry Sector")
-    if not state:             missing.append("Borrower State")
+    if not email:        missing.append("Email Address")
+    if not business_age: missing.append("Business Age")
+    if not industry:     missing.append("Industry Sector")
+    if not state:        missing.append("Borrower State")
+
+    # Check numeric fields separately
+    numeric_fields = {
+        "Loan Amount": loan_amount,
+        "Loan Term": term_months,
+        "Interest Rate": interest_rate,
+        "SBA Guarantee": sba_guarantee,
+        "Jobs Supported": jobs,
+    }
+    for field_name, value in numeric_fields.items():
+        if value is None or str(value).strip() == "":
+            missing.append(field_name)
 
     if missing:
         return dbc.Alert(
@@ -312,17 +320,17 @@ def score_application(n_clicks, email, loan_amount, term_months,
             color="warning",
         )
 
-    # Validate reasonable ranges
+    # Validate ranges
     errors = []
-    if loan_amount and (float(loan_amount) < 5000 or float(loan_amount) > 5000000):
+    if float(loan_amount) < 5000 or float(loan_amount) > 5000000:
         errors.append("Loan Amount must be between $5,000 and $5,000,000")
-    if term_months and (float(term_months) < 12 or float(term_months) > 300):
+    if float(term_months) < 12 or float(term_months) > 300:
         errors.append("Loan Term must be between 12 and 300 months")
-    if interest_rate and (float(interest_rate) < 1 or float(interest_rate) > 15):
+    if float(interest_rate) < 1 or float(interest_rate) > 15:
         errors.append("Interest Rate must be between 1% and 15%")
-    if sba_guarantee and (float(sba_guarantee) < 50 or float(sba_guarantee) > 85):
+    if float(sba_guarantee) < 50 or float(sba_guarantee) > 85:
         errors.append("SBA Guarantee must be between 50% and 85%")
-    if jobs and (float(jobs) < 1 or float(jobs) > 500):
+    if float(jobs) < 1 or float(jobs) > 500:
         errors.append("Jobs Supported must be between 1 and 500")
 
     if errors:
