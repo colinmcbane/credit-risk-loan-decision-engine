@@ -44,11 +44,19 @@ DECISION_COLORS = {
     "Denied":                      "#E74C3C",
 }
 
-# Load model once at module level
-try:
-    CHAMPION_MODEL = joblib.load(CHAMPION_MODEL_PATH)
-except Exception:
-    CHAMPION_MODEL = None
+# Model loaded lazily on first request
+CHAMPION_MODEL = None
+
+def get_model():
+    """Load champion model lazily on first use."""
+    global CHAMPION_MODEL
+    if CHAMPION_MODEL is None:
+        try:
+            CHAMPION_MODEL = joblib.load(CHAMPION_MODEL_PATH)
+            print(f"[live] Champion model loaded from {CHAMPION_MODEL_PATH}")
+        except Exception as e:
+            print(f"[live] Failed to load model: {e}")
+    return CHAMPION_MODEL
 
 
 def build_input_row(raw_df: pd.DataFrame) -> pd.DataFrame:
@@ -302,7 +310,8 @@ def score_application(n_clicks, email, loan_amount, term_months,
             color="warning",
         )
 
-    if CHAMPION_MODEL is None:
+    model = get_model()
+    if model is None:
         return dbc.Alert("Champion model not loaded. Check models/ directory.",
                          color="danger")
 
@@ -363,7 +372,7 @@ def score_application(n_clicks, email, loan_amount, term_months,
     scaled_df = preprocess_and_scale(raw_df)
     X         = scaled_df[FEATURE_COLUMNS]
 
-    predicted_prob = float(CHAMPION_MODEL.predict_proba(X)[0, 1])
+    predicted_prob = float(model.predict_proba(X)[0, 1])
     decision       = classify_decision(predicted_prob)
     reason_codes   = extract_reason_codes(
         pd.Series(scaled_df.iloc[0])
