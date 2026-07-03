@@ -34,6 +34,7 @@ from phase7_dashboard.tabs import (
     tab_synthetic,
     tab_fairness,
     tab_live,
+    tab_about,
 )
 
 # ── Initialize app ────────────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ app.layout = dbc.Container(
                         dbc.Tab(label="Synthetic Analysis",  tab_id="tab-synthetic"),
                         dbc.Tab(label="Fairness Analysis",   tab_id="tab-fairness"),
                         dbc.Tab(label="Live Application",    tab_id="tab-live"),
+                        dbc.Tab(label="About & Sources",     tab_id="tab-about"),
                     ],
                     style={"marginTop": "10px"},
                 ),
@@ -122,6 +124,8 @@ def render_tab(active_tab):
         return tab_fairness.layout()
     elif active_tab == "tab-live":
         return tab_live.layout()
+    elif active_tab == "tab-about":
+        return tab_about.layout()
     return html.P("Tab not found.")
 
 

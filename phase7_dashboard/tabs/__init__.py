@@ -4,4 +4,5 @@ from phase7_dashboard.tabs import (
     tab_synthetic,
     tab_fairness,
     tab_live,
+    tab_about,
 )
