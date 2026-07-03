@@ -312,6 +312,26 @@ def score_application(n_clicks, email, loan_amount, term_months,
             color="warning",
         )
 
+    # Validate reasonable ranges
+    errors = []
+    if loan_amount and (float(loan_amount) < 5000 or float(loan_amount) > 5000000):
+        errors.append("Loan Amount must be between $5,000 and $5,000,000")
+    if term_months and (float(term_months) < 12 or float(term_months) > 300):
+        errors.append("Loan Term must be between 12 and 300 months")
+    if interest_rate and (float(interest_rate) < 1 or float(interest_rate) > 15):
+        errors.append("Interest Rate must be between 1% and 15%")
+    if sba_guarantee and (float(sba_guarantee) < 50 or float(sba_guarantee) > 85):
+        errors.append("SBA Guarantee must be between 50% and 85%")
+    if jobs and (float(jobs) < 1 or float(jobs) > 500):
+        errors.append("Jobs Supported must be between 1 and 500")
+
+    if errors:
+        return dbc.Alert(
+            [html.Strong("Invalid input values: "), html.Br()] +
+            [html.Li(e) for e in errors],
+            color="danger",
+        )
+
     model = get_model()
     if model is None:
         return dbc.Alert("Champion model not loaded. Check models/ directory.",
