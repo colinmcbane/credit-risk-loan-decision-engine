@@ -296,15 +296,15 @@ def score_application(n_clicks, email, loan_amount, term_months,
 
     # ── Validate inputs ───────────────────────────────────────────────────
     missing = []
-    if not email:           missing.append("Email Address")
-    if not loan_amount:     missing.append("Loan Amount")
-    if not term_months:     missing.append("Loan Term")
-    if not interest_rate:   missing.append("Interest Rate")
-    if not sba_guarantee:   missing.append("SBA Guarantee")
-    if not jobs:            missing.append("Jobs Supported")
-    if not business_age:    missing.append("Business Age")
-    if not industry:        missing.append("Industry Sector")
-    if not state:           missing.append("Borrower State")
+    if not email:             missing.append("Email Address")
+    if loan_amount is None:   missing.append("Loan Amount")
+    if term_months is None:   missing.append("Loan Term")
+    if interest_rate is None: missing.append("Interest Rate")
+    if sba_guarantee is None: missing.append("SBA Guarantee")
+    if jobs is None:          missing.append("Jobs Supported")
+    if not business_age:      missing.append("Business Age")
+    if not industry:          missing.append("Industry Sector")
+    if not state:             missing.append("Borrower State")
 
     if missing:
         return dbc.Alert(
