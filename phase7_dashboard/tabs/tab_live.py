@@ -382,8 +382,9 @@ def score_application(n_clicks, email, loan_amount, term_months,
 
     color = DECISION_COLORS.get(decision, "#888")
 
-    # ── Send email if adverse action required ─────────────────────────────
+    # ── Generate adverse action letter if required ────────────────────────
     email_status = ""
+    letter_text  = ""
     if decision in ("Denied", "Approved - Unfavorable Terms"):
         try:
             from dotenv import load_dotenv
@@ -396,31 +397,11 @@ def score_application(n_clicks, email, loan_amount, term_months,
                 reason_codes=reason_codes,
                 client=gemini_client,
             )
-            letter_results = {
-                email: {
-                    "letter_path": None,
-                    "letter_text": letter_text,
-                    "decision":    decision,
-                    "status":      "generated",
-                }
-            }
-            # Write letter to temp file for email sender
-            import tempfile
-            with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".txt", delete=False
-            ) as tmp:
-                tmp.write(letter_text)
-                tmp_path = tmp.name
-
-            letter_results[email]["letter_path"] = tmp_path
-            send_all_emails(
-                letter_results,
-                recipient_address=email,
-                dry_run=False,
-            )
-            email_status = f"✓ Adverse action letter sent to {email}"
+            # Display letter in dashboard instead of sending via SMTP
+            # (SMTP is blocked on Render free tier)
+            email_status = f"✓ Letter generated for {email}"
         except Exception as e:
-            email_status = f"⚠ Email not sent: {str(e)[:80]}"
+            email_status = f"⚠ Letter not generated: {str(e)[:80]}"
 
     # ── Build result card ─────────────────────────────────────────────────
     result_children = [
@@ -500,6 +481,23 @@ def score_application(n_clicks, email, loan_amount, term_months,
                               if email_status.startswith("✓") else "warning",
                               className="mt-3"),
                 ) if email_status else html.Div(),
+
+                # Adverse action letter display
+                html.Div([
+                    html.H6("Adverse Action Letter", className="mb-2 mt-3"),
+                    html.Pre(
+                        letter_text,
+                        style={
+                            "backgroundColor": "#f8f9fa",
+                            "padding": "15px",
+                            "borderRadius": "5px",
+                            "fontSize": "0.8rem",
+                            "maxHeight": "300px",
+                            "overflowY": "auto",
+                            "whiteSpace": "pre-wrap",
+                        }
+                    ),
+                ]) if decision != "Approved" and letter_text else html.Div(),
 
             ]),
         ]),
