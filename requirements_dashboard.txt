@@ -8,3 +8,5 @@ lightgbm
 python-dotenv
 google-genai
 gunicorn
+scikit-learn
+imbalanced-learn
