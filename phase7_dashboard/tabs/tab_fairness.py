@@ -99,8 +99,8 @@ def build_tpr_chart(df: pd.DataFrame, title: str) -> go.Figure:
         yaxis=dict(range=[0, 1.15]),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=350,
-        margin=dict(t=50, b=60),
+        height=480,
+        margin=dict(t=60, b=80),
         showlegend=False,
     )
     fig.update_xaxes(showgrid=False, tickangle=45)
@@ -126,8 +126,8 @@ def build_fpr_chart(df: pd.DataFrame, title: str) -> go.Figure:
         yaxis_title="False Positive Rate",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=350,
-        margin=dict(t=50, b=60),
+        height=480,
+        margin=dict(t=60, b=80),
         showlegend=False,
     )
     fig.update_xaxes(showgrid=False, tickangle=45)
@@ -158,12 +158,12 @@ def layout():
 
     return html.Div([
 
-        html.H3("Fairness Analysis", className="mb-1"),
+        html.H3("Fairness Analysis", className="mb-2 mt-2"),
         html.P(
             "ECOA Regulation B disparate impact testing using equalized odds. "
             "Red bars indicate groups flagged for disparate impact relative "
             "to the reference group.",
-            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "20px"},
+            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "32px"},
         ),
 
         # ── Summary cards ─────────────────────────────────────────────────
@@ -171,42 +171,42 @@ def layout():
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2("4/5ths Rule", style={"color": "#2C3E50", "fontWeight": "700"}),
                 html.P("ECOA Test Applied"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #2C3E50"}), width=4),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #2C3E50"}), width=4),
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{passes}", style={"color": "#2ECC71", "fontWeight": "700"}),
                 html.P("Dimensions Clean (No Flag)"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #2ECC71"}), width=4),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #2ECC71"}), width=4),
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{fails}", style={"color": "#E74C3C", "fontWeight": "700"}),
                 html.P("Dimensions Flagged for Review"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #E74C3C"}), width=4),
-        ], className="mb-4 g-3"),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #E74C3C"}), width=4),
+        ], className="mb-5 g-3"),
 
         # ── Summary table ─────────────────────────────────────────────────
-        html.H5("Fairness Test Summary", className="mb-3"),
+        html.H5("Fairness Test Summary", className="mt-4 mb-3"),
         build_summary_table(summary_df),
 
-        html.Hr(className="my-4"),
+        html.Hr(className="my-5"),
 
         # ── State charts ──────────────────────────────────────────────────
-        html.H5("Equalized Odds by Group", className="mb-2"),
+        html.H5("Equalized Odds by Group", className="mt-2 mb-3"),
         html.P(
             "Red bars indicate groups flagged for disparate impact. "
             "TPR = True Positive Rate (default detection). "
             "FPR = False Positive Rate (wrongful denial rate).",
-            style={"color": "#666", "fontSize": "0.85rem", "marginBottom": "15px"},
+            style={"color": "#666", "fontSize": "0.85rem", "marginBottom": "24px"},
         ),
 
         dbc.Row([
             dbc.Col(dcc.Graph(figure=build_tpr_chart(state_df, "By State")), width=6),
             dbc.Col(dcc.Graph(figure=build_fpr_chart(state_df, "By State")), width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
         # ── Industry charts ───────────────────────────────────────────────
         dbc.Row([
             dbc.Col(dcc.Graph(figure=build_tpr_chart(industry_df, "By Industry")), width=6),
             dbc.Col(dcc.Graph(figure=build_fpr_chart(industry_df, "By Industry")), width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
         # ── Loan size chart + regulatory context ──────────────────────────
         dbc.Row([
@@ -235,6 +235,6 @@ def layout():
                     style={"fontSize": "0.85rem"},
                 ),
             ], width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
     ])

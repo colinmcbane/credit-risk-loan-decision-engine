@@ -52,7 +52,7 @@ def build_metrics_cards(df: pd.DataFrame) -> list:
                                              "fontSize": "0.95rem"}),
                         html.P(subtitle, style={"color": "#888", "fontSize": "0.75rem",
                                                 "marginBottom": "0"}),
-                    ]),
+                    ], className="p-4"),
                     style={"textAlign": "center", "borderTop": f"4px solid {color}"},
                 ),
                 width=2,
@@ -87,8 +87,8 @@ def build_roc_chart(df: pd.DataFrame) -> go.Figure:
         showlegend=False,
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=350,
-        margin=dict(t=50, b=40),
+        height=450,
+        margin=dict(t=60, b=50),
     )
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(showgrid=True, gridcolor="#eee")
@@ -123,8 +123,8 @@ def build_ks_gini_chart(df: pd.DataFrame) -> go.Figure:
     ), row=1, col=2)
 
     fig.update_layout(
-        height=380,
-        margin=dict(t=60, b=40),
+        height=460,
+        margin=dict(t=70, b=50),
         plot_bgcolor="white",
         paper_bgcolor="white",
     )
@@ -166,8 +166,8 @@ def build_confusion_matrix(df: pd.DataFrame) -> go.Figure:
 
     fig.update_layout(
         title=f"Confusion Matrix — {champion['Model']} (Champion)",
-        height=380,
-        margin=dict(t=50, b=40, l=120, r=20),
+        height=480,
+        margin=dict(t=60, b=40, l=120, r=20),
         plot_bgcolor="white",
         paper_bgcolor="white",
         font=dict(size=12),
@@ -226,22 +226,22 @@ def layout():
     return html.Div([
 
         # ── Section header ────────────────────────────────────────────────
-        html.H3("Model Performance", className="mb-1"),
+        html.H3("Model Performance", className="mb-2 mt-2"),
         html.P(
             f"Champion Model: {champion['Model']} | "
             f"Trained on 382,144 SBA 7(a) loans | "
             f"5-fold stratified cross-validation with SMOTE",
-            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "20px"},
+            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "32px"},
         ),
 
         # ── Metric cards ──────────────────────────────────────────────────
-        dbc.Row(build_metrics_cards(df), className="mb-4 g-3"),
+        dbc.Row(build_metrics_cards(df), className="mb-5 g-3"),
 
         # ── Charts row 1 ─────────────────────────────────────────────────
         dbc.Row([
             dbc.Col(dcc.Graph(figure=build_roc_chart(df)), width=6),
             dbc.Col(dcc.Graph(figure=build_ks_gini_chart(df)), width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
         # ── Confusion matrix ──────────────────────────────────────────────
         dbc.Row([
@@ -287,10 +287,10 @@ def layout():
                     style={"fontSize": "0.8rem", "marginTop": "15px"},
                 ),
             ], width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
         # ── Comparison table ──────────────────────────────────────────────
-        html.H5("Champion-Challenger Comparison Table", className="mb-3"),
+        html.H5("Champion-Challenger Comparison Table", className="mt-4 mb-3"),
         build_comparison_table(df),
 
     ])

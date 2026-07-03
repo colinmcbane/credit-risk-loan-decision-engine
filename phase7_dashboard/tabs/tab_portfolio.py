@@ -55,8 +55,8 @@ def build_decision_pie(df: pd.DataFrame) -> go.Figure:
 
     fig.update_layout(
         title="Decision Distribution (5,000 Test Loans)",
-        height=380,
-        margin=dict(t=50, b=20, l=20, r=20),
+        height=460,
+        margin=dict(t=60, b=30, l=20, r=20),
         paper_bgcolor="white",
         showlegend=False,
     )
@@ -89,8 +89,8 @@ def build_prob_histogram(df: pd.DataFrame) -> go.Figure:
         yaxis_title="Number of Loans",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=380,
-        margin=dict(t=50, b=40),
+        height=460,
+        margin=dict(t=60, b=50),
     )
     fig.update_xaxes(showgrid=True, gridcolor="#eee")
     fig.update_yaxes(showgrid=True, gridcolor="#eee")
@@ -149,8 +149,8 @@ def build_shap_importance(shap_df: pd.DataFrame) -> go.Figure:
         xaxis_title="Mean Absolute SHAP Value",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=550,
-        margin=dict(t=50, b=40, l=200),
+        height=630,
+        margin=dict(t=60, b=50, l=210),
     )
     fig.update_xaxes(showgrid=True, gridcolor="#eee")
     fig.update_yaxes(showgrid=False)
@@ -190,8 +190,8 @@ def build_decision_by_prob_band(df: pd.DataFrame) -> go.Figure:
         barmode="stack",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        height=380,
-        margin=dict(t=50, b=40),
+        height=460,
+        margin=dict(t=60, b=50),
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
     fig.update_xaxes(showgrid=False)
@@ -220,11 +220,11 @@ def layout():
     return html.Div([
 
         # ── Section header ────────────────────────────────────────────────
-        html.H3("Portfolio Overview", className="mb-1"),
+        html.H3("Portfolio Overview", className="mb-2 mt-2"),
         html.P(
             f"5,000 out-of-sample test loans scored by LightGBM champion model | "
             f"Mean predicted default probability: {mean_pd:.2%}",
-            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "20px"},
+            style={"color": "#666", "fontSize": "0.9rem", "marginBottom": "32px"},
         ),
 
         # ── Summary cards ─────────────────────────────────────────────────
@@ -232,31 +232,31 @@ def layout():
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{total:,}", style={"color": "#2C3E50", "fontWeight": "700"}),
                 html.P("Total Loans Scored"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #2C3E50"}), width=3),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #2C3E50"}), width=3),
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{approved:,}", style={"color": "#2ECC71", "fontWeight": "700"}),
                 html.P(f"Approved ({approved/total*100:.1f}%)"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #2ECC71"}), width=3),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #2ECC71"}), width=3),
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{denied:,}", style={"color": "#E74C3C", "fontWeight": "700"}),
                 html.P(f"Denied ({denied/total*100:.1f}%)"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #E74C3C"}), width=3),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #E74C3C"}), width=3),
             dbc.Col(dbc.Card(dbc.CardBody([
                 html.H2(f"{unfav:,}", style={"color": "#F39C12", "fontWeight": "700"}),
                 html.P(f"Unfavorable Terms ({unfav/total*100:.1f}%)"),
-            ]), style={"textAlign": "center", "borderTop": "4px solid #F39C12"}), width=3),
-        ], className="mb-4 g-3"),
+            ], className="p-4"), style={"textAlign": "center", "borderTop": "4px solid #F39C12"}), width=3),
+        ], className="mb-5 g-3"),
 
         # ── Charts row 1 ─────────────────────────────────────────────────
         dbc.Row([
             dbc.Col(dcc.Graph(figure=build_decision_pie(decisions_df)), width=5),
             dbc.Col(dcc.Graph(figure=build_prob_histogram(decisions_df)), width=7),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
         # ── Charts row 2 ─────────────────────────────────────────────────
         dbc.Row([
             dbc.Col(dcc.Graph(figure=build_decision_by_prob_band(decisions_df)), width=6),
             dbc.Col(dcc.Graph(figure=build_shap_importance(shap_df)), width=6),
-        ], className="mb-4"),
+        ], className="mb-5"),
 
     ])
