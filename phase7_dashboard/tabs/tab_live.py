@@ -125,8 +125,6 @@ def layout():
                                     id="input-loan-amount",
                                     type="number",
                                     placeholder="e.g. 250000",
-                                    min=5000,
-                                    max=5000000,
                                 ),
                             ], width=6),
                             dbc.Col([
@@ -135,8 +133,6 @@ def layout():
                                     id="input-term-months",
                                     type="number",
                                     placeholder="e.g. 120",
-                                    min=12,
-                                    max=300,
                                 ),
                             ], width=6),
                         ], className="mb-3"),
@@ -149,8 +145,6 @@ def layout():
                                     id="input-interest-rate",
                                     type="number",
                                     placeholder="e.g. 6.5",
-                                    min=1.0,
-                                    max=15.0,
                                     step=0.1,
                                 ),
                                 dbc.FormText("Enter as percentage, e.g. 6.5 for 6.5%"),
@@ -161,8 +155,6 @@ def layout():
                                     id="input-sba-guarantee",
                                     type="number",
                                     placeholder="e.g. 75",
-                                    min=50,
-                                    max=85,
                                     step=1,
                                 ),
                                 dbc.FormText("Typical range: 50% – 85%"),
@@ -177,8 +169,6 @@ def layout():
                                     id="input-jobs",
                                     type="number",
                                     placeholder="e.g. 10",
-                                    min=1,
-                                    max=500,
                                 ),
                                 dbc.FormText("Total jobs created + retained"),
                             ], width=6),
@@ -335,9 +325,10 @@ def score_application(n_clicks, email, loan_amount, term_months,
 
     if errors:
         return dbc.Alert(
-            [html.Strong("Invalid input values: "), html.Br()] +
-            [html.Li(e) for e in errors],
+            [html.Strong("Invalid input values:"), html.Br(), html.Br()] +
+            [html.Div(f"• {e}", style={"marginBottom": "4px"}) for e in errors],
             color="danger",
+            style={"minHeight": "auto", "padding": "15px"},
         )
 
     model = get_model()
