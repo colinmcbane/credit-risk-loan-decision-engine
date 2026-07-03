@@ -130,13 +130,38 @@ def layout():
                     dbc.CardBody([
                         dbc.ListGroup([
                             dbc.ListGroupItem([
-                                html.H6("SBA 7(a) & 504 FOIA Loan Data",
-                                        className="mb-1"),
+                                html.H6("FOIA - 7(a) FY2010-FY2019", className="mb-1"),
                                 html.P(
-                                    "Primary dataset — 382,144 SBA 7(a) loan records "
-                                    "from 2010–2019. Includes loan amount, term, interest "
-                                    "rate, borrower state, industry, business age, and "
-                                    "charge-off status.",
+                                    "SBA 7(a) loan records from fiscal year 2010 through 2019. "
+                                    "Primary historical training dataset.",
+                                    className="mb-1 text-muted",
+                                    style={"fontSize": "0.85rem"},
+                                ),
+                                html.A(
+                                    "data.sba.gov/dataset/7-a-504-foia",
+                                    href="https://data.sba.gov/dataset/7-a-504-foia",
+                                    target="_blank",
+                                ),
+                            ]),
+                            dbc.ListGroupItem([
+                                html.H6("FOIA - 7(a) FY2020-Present", className="mb-1"),
+                                html.P(
+                                    "SBA 7(a) loan records from fiscal year 2020 to present. "
+                                    "Combined with FY2010-FY2019 to form the full 382,144 loan corpus.",
+                                    className="mb-1 text-muted",
+                                    style={"fontSize": "0.85rem"},
+                                ),
+                                html.A(
+                                    "data.sba.gov/dataset/7-a-504-foia",
+                                    href="https://data.sba.gov/dataset/7-a-504-foia",
+                                    target="_blank",
+                                ),
+                            ]),
+                            dbc.ListGroupItem([
+                                html.H6("7(a) & 504 FOIA Data Dictionary", className="mb-1"),
+                                html.P(
+                                    "Official SBA data dictionary defining all field names, "
+                                    "definitions, and valid values used in the FOIA datasets.",
                                     className="mb-1 text-muted",
                                     style={"fontSize": "0.85rem"},
                                 ),
