@@ -3,4 +3,6 @@
 data/raw/
 *.db
 .env
-.DS_Store
+.DS_Store.RData
+.Rhistory
+.vscode/
