@@ -1159,8 +1159,6 @@ data limitations documented in Section 2.
 
 **Results Summary:**
 
-| Dimension | DI Flags | EO Flags |
-|-----------|----------|----------|
 {summary_df[["Dimension", "DI Flags (4/5ths)", "EO Flags (ratio)"]].to_markdown(index=False)}
 
 **Total Disparate Impact Flags:** {total_di_flags}
@@ -1241,7 +1239,7 @@ considered in the proxy variable analysis.
 **Validation:** Held-out test set (20%), 5-fold cross-validation,
 independent fairlearn library cross-check
 **Explainability:** SHAP TreeExplainer — local and global explanations
-**Adverse Action Engine:** Anthropic Claude API (claude-sonnet-4-6) —
+**Adverse Action Engine:** Google Gemini API (gemini-3.1-flash-lite) —
   Orchestrated via deterministic SHAP feature mappings for standardized,
   ECOA-compliant Adverse Action notice synthesis. The LLM operates as a
   structured text rendering layer only — credit decisions are made

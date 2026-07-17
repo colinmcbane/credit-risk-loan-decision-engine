@@ -5,12 +5,13 @@ Phase 7 — Interactive Credit Risk Dashboard
 Credit Risk & Loan Decision Engine
 Author: Colin McBane
 
-A five-tab Dash dashboard providing:
+A six-tab Dash dashboard providing:
     Tab 1 — Model Performance (AUC, KS, Gini, ROC curve, confusion matrix)
     Tab 2 — Portfolio Overview (5,000 scored loans from Phase 4)
     Tab 3 — Synthetic Test Analysis (4 AI source comparison)
     Tab 4 — Fairness Analysis (ECOA disparate impact results)
     Tab 5 — Live Loan Application (real-time scoring + email delivery)
+    Tab 6 — About & Sources (methodology, regulatory references, citations)
 
 Usage:
     python3 phase7_dashboard/app.py

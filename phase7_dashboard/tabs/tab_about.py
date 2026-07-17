@@ -52,7 +52,7 @@ def layout():
                                 html.H6("Champion Model", className="text-muted mb-1"),
                                 html.P("LightGBM (AUC: 0.9667)", className="mb-3"),
                                 html.H6("Training Data", className="text-muted mb-1"),
-                                html.P("382,144 SBA 7(a) loans (2010–2019)", className="mb-3"),
+                                html.P("382,144 SBA 7(a) loans (FY2010–FY2022)", className="mb-3"),
                                 html.H6("GitHub", className="text-muted mb-1"),
                                 html.A(
                                     "github.com/colinmcbane/credit-risk-loan-decision-engine",

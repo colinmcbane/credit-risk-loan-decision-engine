@@ -204,10 +204,6 @@ def split_data(df):
 # STEP 4: ENCODE CATEGORICALS AND SCALE NUMERICS
 # =============================================================================
 
-# =============================================================================
-# STEP 4: ENCODE CATEGORICALS AND SCALE NUMERICS
-# =============================================================================
-
 def encode_and_scale(X_train, X_test):
     print("\n[4/5] Encoding categoricals and scaling numerics...")
 

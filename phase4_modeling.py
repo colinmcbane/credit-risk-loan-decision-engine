@@ -842,7 +842,7 @@ def generate_shap_explanations(champion_model, champion_name,
     print("   SHAP beeswarm chart saved")
 
     # --- INDIVIDUAL LOAN WATERFALL ---
-    # Highest risk loan in sample — fed into Claude API in Phase 6
+    # Highest risk loan in sample — fed into Gemini API in Phase 6
     print("   Generating waterfall chart for highest risk loan...")
 
     y_prob_sample = champion_model.predict_proba(X_sample)[:, 1]
