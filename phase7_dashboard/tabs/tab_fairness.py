@@ -42,6 +42,7 @@ def load_loan_size() -> pd.DataFrame:
 # ── Chart builders ────────────────────────────────────────────────────────────
 def build_summary_table(df: pd.DataFrame) -> dbc.Table:
     """Build fairness summary table with flag indicators."""
+    df = df.fillna("N/A")
     header = html.Thead(html.Tr([
         html.Th(col) for col in df.columns
     ]))
