@@ -82,7 +82,7 @@ def build_roc_chart(df: pd.DataFrame) -> go.Figure:
 
     fig.update_layout(
         title="AUC by Model — Champion-Challenger Comparison",
-        yaxis=dict(range=[0.85, 1.0], title="AUC", fixedrange=True),
+        yaxis=dict(range=[0.80, 1.0], title="AUC", fixedrange=True),
         xaxis=dict(fixedrange=True),
         xaxis_title="Model",
         showlegend=False,
