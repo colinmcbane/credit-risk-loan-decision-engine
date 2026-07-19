@@ -64,7 +64,8 @@ def build_decision_comparison(df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         title="Decision Distribution by AI Source (%)",
         yaxis_title="Percentage of Applicants",
-        yaxis=dict(range=[0, 110]),
+        yaxis=dict(range=[0, 110], fixedrange=True),
+        xaxis=dict(fixedrange=True),
         barmode="group",
         plot_bgcolor="white",
         paper_bgcolor="white",
@@ -104,7 +105,8 @@ def build_mean_pd_comparison(df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         title="Mean Predicted Default Probability by AI Source",
         yaxis_title="Mean Predicted Default Probability",
-        yaxis=dict(range=[0, 1.1]),
+        yaxis=dict(range=[0, 1.1], fixedrange=True),
+        xaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=460,
@@ -139,6 +141,8 @@ def build_prob_distribution(df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         title="Predicted Probability Distribution by AI Source",
         yaxis_title="Predicted Default Probability",
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=460,

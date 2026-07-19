@@ -82,7 +82,8 @@ def build_roc_chart(df: pd.DataFrame) -> go.Figure:
 
     fig.update_layout(
         title="AUC by Model — Champion-Challenger Comparison",
-        yaxis=dict(range=[0.85, 1.0], title="AUC"),
+        yaxis=dict(range=[0.85, 1.0], title="AUC", fixedrange=True),
+        xaxis=dict(fixedrange=True),
         xaxis_title="Model",
         showlegend=False,
         plot_bgcolor="white",
@@ -128,8 +129,9 @@ def build_ks_gini_chart(df: pd.DataFrame) -> go.Figure:
         plot_bgcolor="white",
         paper_bgcolor="white",
     )
-    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=1, range=[0, 110])
-    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=2, range=[0, 110])
+    fig.update_xaxes(fixedrange=True)
+    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=1, range=[0, 110], fixedrange=True)
+    fig.update_yaxes(showgrid=True, gridcolor="#eee", row=1, col=2, range=[0, 110], fixedrange=True)
     return fig
 
 
@@ -171,6 +173,8 @@ def build_confusion_matrix(df: pd.DataFrame) -> go.Figure:
         plot_bgcolor="white",
         paper_bgcolor="white",
         font=dict(size=12),
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
     )
     return fig
 

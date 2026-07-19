@@ -59,6 +59,8 @@ def build_decision_pie(df: pd.DataFrame) -> go.Figure:
         margin=dict(t=60, b=30, l=20, r=20),
         paper_bgcolor="white",
         showlegend=False,
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
     )
     return fig
 
@@ -87,6 +89,8 @@ def build_prob_histogram(df: pd.DataFrame) -> go.Figure:
         title="Predicted Default Probability Distribution",
         xaxis_title="Predicted Default Probability",
         yaxis_title="Number of Loans",
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=460,
@@ -147,6 +151,8 @@ def build_shap_importance(shap_df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         title="Top SHAP Feature Importance (Mean |SHAP Value|)",
         xaxis_title="Mean Absolute SHAP Value",
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=630,
@@ -187,6 +193,8 @@ def build_decision_by_prob_band(df: pd.DataFrame) -> go.Figure:
         title="Loan Count by Probability Band and Decision",
         xaxis_title="Predicted Default Probability Band",
         yaxis_title="Number of Loans",
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
         barmode="stack",
         plot_bgcolor="white",
         paper_bgcolor="white",

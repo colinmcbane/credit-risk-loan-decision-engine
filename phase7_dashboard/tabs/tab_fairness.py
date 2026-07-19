@@ -96,7 +96,8 @@ def build_tpr_chart(df: pd.DataFrame, title: str) -> go.Figure:
     fig.update_layout(
         title=f"{title} — True Positive Rate",
         yaxis_title="True Positive Rate (Recall)",
-        yaxis=dict(range=[0, 1.15]),
+        yaxis=dict(range=[0, 1.15], fixedrange=True),
+        xaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=480,
@@ -124,6 +125,8 @@ def build_fpr_chart(df: pd.DataFrame, title: str) -> go.Figure:
     fig.update_layout(
         title=f"{title} — False Positive Rate",
         yaxis_title="False Positive Rate",
+        xaxis=dict(fixedrange=True),
+        yaxis=dict(fixedrange=True),
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=480,
