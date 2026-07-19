@@ -239,13 +239,13 @@ def layout():
 
         # ── Charts row 1 ─────────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_roc_chart(df)), width=6),
-            dbc.Col(dcc.Graph(figure=build_ks_gini_chart(df)), width=6),
+            dbc.Col(dcc.Graph(figure=build_roc_chart(df), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_ks_gini_chart(df), config={"displayModeBar": False}), width=6),
         ], className="mb-5"),
 
         # ── Confusion matrix ──────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_confusion_matrix(df)), width=6),
+            dbc.Col(dcc.Graph(figure=build_confusion_matrix(df), config={"displayModeBar": False}), width=6),
             dbc.Col([
                 html.H5("Industry Context", className="mb-3"),
                 dbc.Table([
