@@ -249,14 +249,14 @@ def layout():
 
         # ── Charts row 1 ─────────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_decision_pie(decisions_df), config={"displayModeBar": False}), width=5),
-            dbc.Col(dcc.Graph(figure=build_prob_histogram(decisions_df), config={"displayModeBar": False}), width=7),
+            dbc.Col(dcc.Graph(figure=build_decision_pie(decisions_df), config={"displayModeBar": False, "staticPlot": True}), width=5),
+            dbc.Col(dcc.Graph(figure=build_prob_histogram(decisions_df), config={"displayModeBar": False, "staticPlot": True}), width=7),
         ], className="mb-5"),
 
         # ── Charts row 2 ─────────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_decision_by_prob_band(decisions_df), config={"displayModeBar": False}), width=6),
-            dbc.Col(dcc.Graph(figure=build_shap_importance(shap_df), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_decision_by_prob_band(decisions_df), config={"displayModeBar": False, "staticPlot": True}), width=6),
+            dbc.Col(dcc.Graph(figure=build_shap_importance(shap_df), config={"displayModeBar": False, "staticPlot": True}), width=6),
         ], className="mb-5"),
 
     ])

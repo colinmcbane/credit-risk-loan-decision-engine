@@ -250,13 +250,13 @@ def layout():
 
         # ── Charts row 1 ─────────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_decision_comparison(df), config={"displayModeBar": False}), width=6),
-            dbc.Col(dcc.Graph(figure=build_mean_pd_comparison(df), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_decision_comparison(df), config={"displayModeBar": False, "staticPlot": True}), width=6),
+            dbc.Col(dcc.Graph(figure=build_mean_pd_comparison(df), config={"displayModeBar": False, "staticPlot": True}), width=6),
         ], className="mb-5"),
 
         # ── Charts row 2 ─────────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_prob_distribution(df), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_prob_distribution(df), config={"displayModeBar": False, "staticPlot": True}), width=6),
             dbc.Col([
                 html.H5("Risk Tier Accuracy", className="mt-2 mb-3"),
                 html.P(
