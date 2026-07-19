@@ -5,6 +5,7 @@ An end-to-end machine learning pipeline that scores SBA 7(a) loan applications, 
 **🔗 Live Demo:** [credit-risk-loan-decision-engine.onrender.com](https://credit-risk-loan-decision-engine.onrender.com)
 
 *Note: The free hosting tier spins down with inactivity — first load may take 30–50 seconds.*
+*Email delivery is available when running locally. The deployed version displays generated letters on-screen due to Render free tier SMTP restrictions.*
 
 ---
 
