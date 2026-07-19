@@ -198,19 +198,19 @@ def layout():
         ),
 
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_tpr_chart(state_df, "By State"), config={"displayModeBar": False, "staticPlot": True}), width=6),
-            dbc.Col(dcc.Graph(figure=build_fpr_chart(state_df, "By State"), config={"displayModeBar": False, "staticPlot": True}), width=6),
+            dbc.Col(dcc.Graph(figure=build_tpr_chart(state_df, "By State"), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_fpr_chart(state_df, "By State"), config={"displayModeBar": False}), width=6),
         ], className="mb-5"),
 
         # ── Industry charts ───────────────────────────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_tpr_chart(industry_df, "By Industry"), config={"displayModeBar": False, "staticPlot": True}), width=6),
-            dbc.Col(dcc.Graph(figure=build_fpr_chart(industry_df, "By Industry"), config={"displayModeBar": False, "staticPlot": True}), width=6),
+            dbc.Col(dcc.Graph(figure=build_tpr_chart(industry_df, "By Industry"), config={"displayModeBar": False}), width=6),
+            dbc.Col(dcc.Graph(figure=build_fpr_chart(industry_df, "By Industry"), config={"displayModeBar": False}), width=6),
         ], className="mb-5"),
 
         # ── Loan size chart + regulatory context ──────────────────────────
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=build_tpr_chart(loan_df, "By Loan Size"), config={"displayModeBar": False, "staticPlot": True}), width=6),
+            dbc.Col(dcc.Graph(figure=build_tpr_chart(loan_df, "By Loan Size"), config={"displayModeBar": False}), width=6),
             dbc.Col([
                 html.H5("Regulatory Context", className="mb-3"),
                 dbc.Alert(
